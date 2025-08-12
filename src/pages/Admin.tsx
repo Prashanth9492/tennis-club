@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // import axios for API calls
 import axios from "axios";
-// ...existing code...
+
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+// ...existing code...
+
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,16 +50,16 @@ interface DashboardStats {
   totalGallery: number;
 }
 
+
 export default function Admin() {
   const { toast } = useToast();
-  
   // State for form management (hooks must be called unconditionally)
   const [selectedFiles, setSelectedFiles] = useState<{[key: string]: File | null}>({});
   // const [firebaseError, setFirebaseError] = useState<string | null>(null);
   const [startTime] = useState(Date.now());
   const [formData, setFormData] = useState({
     team: { name: '', coach: '', captain: '', homeGround: '', description: '' },
-    player: { name: '', age: '', position: '', team: '', battingStyle: '', bowlingStyle: '', description: '' },
+    player: { name: '', age: '', position: '', team: '', battingStyle: '', bowlingStyle: '', house: '', description: '' },
     match: { team1: '', team2: '', date: '', venue: '', type: 'League', status: 'Scheduled' },
     news: { title: '', content: '', category: 'General', featured: false },
     gallery: { title: '', description: '', category: 'Matches' }
@@ -61,8 +67,7 @@ export default function Admin() {
 
   // State for preview dialogs
   const [previewOpen, setPreviewOpen] = useState<string | null>(null);
-  
-  // RTDB state
+  // State for collections (MERN backend)
   const [teams, setTeams] = useState<any[]>([]);
   const [players, setPlayers] = useState<any[]>([]);
   const [matches, setMatches] = useState<any[]>([]);
@@ -73,31 +78,108 @@ export default function Admin() {
   const [matchesLoading, setMatchesLoading] = useState(true);
   const [newsLoading, setNewsLoading] = useState(true);
   const [galleryLoading, setGalleryLoading] = useState(true);
-  // Listen to RTDB changes
+
+  // Points Table State
+  const [pointsTable, setPointsTable] = useState<any[]>([]);
+  const [pointsLoading, setPointsLoading] = useState(false);
+  const [pointsError, setPointsError] = useState<string | null>(null);
+
+  // Fetch all points table data on mount
+  useEffect(() => {
+    setPointsLoading(true);
+    setPointsError(null);
+    axios.get(import.meta.env.VITE_API_BASE_URL + "/points-table")
+      .then((res) => setPointsTable(res.data))
+      .catch((err) => setPointsError(err?.response?.data?.message || err?.message || "Failed to fetch points table"))
+      .finally(() => setPointsLoading(false));
+  }, []);
+
+  // Group points table data by season
+  const groupedBySeason = pointsTable.reduce((acc: Record<string, any[]>, entry) => {
+    if (!acc[entry.season]) acc[entry.season] = [];
+    acc[entry.season].push(entry);
+    return acc;
+  }, {});
+
+  // Points Table UI (must be defined before return)
+  const PointsTableSection = () => (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold">Points Table Management</h2>
+      {pointsLoading ? (
+        <div>Loading points table...</div>
+      ) : pointsError ? (
+        <div className="text-red-500">{pointsError}</div>
+      ) : (
+        Object.keys(groupedBySeason).length === 0 ? (
+          <div>No points table data found.</div>
+        ) : (
+          Object.entries(groupedBySeason).map(([season, teams]: [string, any[]]) => (
+            <div key={season} className="mb-8">
+              <h3 className="text-xl font-semibold mb-2">Season: {season}</h3>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Team</TableHead>
+                    <TableHead>Matches</TableHead>
+                    <TableHead>Wins</TableHead>
+                    <TableHead>Losses</TableHead>
+                    <TableHead>Draws</TableHead>
+                    <TableHead>Points</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {teams.slice(0, 5).map((team, idx) => (
+                    <TableRow key={team._id || idx}>
+                      <TableCell>{team.team}</TableCell>
+                      <TableCell>{team.matches}</TableCell>
+                      <TableCell>{team.wins}</TableCell>
+                      <TableCell>{team.losses}</TableCell>
+                      <TableCell>{team.draws}</TableCell>
+                      <TableCell>{team.points}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ))
+        )
+      )}
+    </div>
+  );
+
+  // Fetch all collections from MERN backend
   React.useEffect(() => {
-    const listeners = [
-      { path: 'teams', setter: setTeams, setLoading: setTeamsLoading },
-      { path: 'players', setter: setPlayers, setLoading: setPlayersLoading },
-      { path: 'matches', setter: setMatches, setLoading: setMatchesLoading },
-      { path: 'news', setter: setNews, setLoading: setNewsLoading },
-      { path: 'gallery', setter: setGallery, setLoading: setGalleryLoading },
-    ];
-    const unsubs = listeners.map(({ path, setter, setLoading }) => {
-      const r = dbRef(rtdb, path);
-      const cb = (snap: any) => {
-        const val = snap.val();
-        if (val) {
-          // Convert object to array with id
-          setter(Object.entries(val).map(([id, v]) => ({ id, ...v })));
-        } else {
-          setter([]);
-        }
-        setLoading(false);
-      };
-      onValue(r, cb);
-      return () => r.off && r.off('value', cb);
+    setTeamsLoading(true);
+    setPlayersLoading(true);
+    setMatchesLoading(true);
+    setNewsLoading(true);
+    setGalleryLoading(true);
+    Promise.all([
+    axios.get(import.meta.env.VITE_API_BASE_URL + "/teams"),
+    axios.get(import.meta.env.VITE_API_BASE_URL + "/players"),
+    axios.get(import.meta.env.VITE_API_BASE_URL + "/matches"),
+    axios.get(import.meta.env.VITE_API_BASE_URL + "/news"),
+    axios.get(import.meta.env.VITE_API_BASE_URL + "/galleries"),
+    ]).then(([teamsRes, playersRes, matchesRes, newsRes, galleryRes]) => {
+      setTeams(teamsRes.data);
+      setPlayers(playersRes.data);
+      setMatches(matchesRes.data);
+      setNews(newsRes.data);
+      setGallery(galleryRes.data);
+    }).catch((error) => {
+      toast({
+        title: "Error",
+        description: error?.response?.data?.message || error?.message || "Failed to fetch data from backend.",
+        variant: "destructive",
+      });
+    }).finally(() => {
+      setTeamsLoading(false);
+      setPlayersLoading(false);
+      setMatchesLoading(false);
+      setNewsLoading(false);
+      setGalleryLoading(false);
     });
-    return () => { unsubs.forEach(unsub => unsub()); };
+    // eslint-disable-next-line
   }, []);
 
   // Authentication checks (after all hooks are called)
@@ -317,93 +399,68 @@ export default function Admin() {
     player: 'players',
     match: 'matches',
     news: 'news',
-    gallery: 'gallery',
+    gallery: 'galleries', // Use plural to match backend
   };
 
   // Form submission handlers
+  // Form submission handlers (MERN backend)
   const handleSubmit = async (category: keyof typeof collectionMap, data: Record<string, unknown>) => {
     try {
-      let imageUrl: string | string[] | null = null;
-      let fileKey: string | null = null;
-      if (category === 'team' && selectedFiles['team-logo']) fileKey = 'team-logo';
-      if (category === 'player' && selectedFiles['player-photo']) fileKey = 'player-photo';
-      if (category === 'news' && selectedFiles['news-image']) fileKey = 'news-image';
-      if (category === 'gallery') {
-        // Gallery can have multiple images
+      let formDataToSend: FormData | null = null;
+        let endpoint = `${import.meta.env.VITE_API_BASE_URL}/${collectionMap[category]}`;
+      // For image upload, use FormData
+      if (category === 'team' && selectedFiles['team-logo']) {
+        formDataToSend = new FormData();
+        Object.entries(data).forEach(([key, value]) => formDataToSend!.append(key, value as string));
+        formDataToSend.append('logo', selectedFiles['team-logo']!);
+      } else if (category === 'player' && selectedFiles['player-photo']) {
+        formDataToSend = new FormData();
+        Object.entries(data).forEach(([key, value]) => formDataToSend!.append(key, value as string));
+        formDataToSend.append('photo', selectedFiles['player-photo']!);
+      } else if (category === 'news' && selectedFiles['news-image']) {
+        formDataToSend = new FormData();
+        Object.entries(data).forEach(([key, value]) => formDataToSend!.append(key, value as string));
+        formDataToSend.append('image', selectedFiles['news-image']!);
+      } else if (category === 'gallery') {
+        formDataToSend = new FormData();
+        Object.entries(data).forEach(([key, value]) => formDataToSend!.append(key, value as string));
+        // Multiple images
         const galleryImageKeys = Object.keys(selectedFiles).filter(k => k.startsWith('gallery-image'));
-        if (galleryImageKeys.length > 0) {
-          const urls: string[] = [];
-          for (const key of galleryImageKeys) {
-            const file = selectedFiles[key];
-            if (file) {
-              try {
-                const sRef = storageRef(storage, `gallery/${file.name}_${Date.now()}`);
-                await uploadBytes(sRef, file);
-                const url = await getDownloadURL(sRef);
-                urls.push(url);
-              } catch (uploadErr: any) {
-                if (uploadErr?.message?.includes('CORS') || uploadErr?.code === 'storage/unknown') {
-                  toast({
-                    title: "CORS Error",
-                    description: "Image upload failed due to CORS configuration. Please ensure Firebase Storage CORS is set.",
-                    variant: "destructive",
-                  });
-                } else {
-                  toast({
-                    title: "Upload Error",
-                    description: uploadErr?.message || "Failed to upload image.",
-                    variant: "destructive",
-                  });
-                }
-                return;
-              }
-            }
-          }
-          imageUrl = urls;
-        }
-      } else if (fileKey && selectedFiles[fileKey]) {
-        const file = selectedFiles[fileKey];
-        try {
-          const sRef = storageRef(storage, `${category}/${file.name}_${Date.now()}`);
-          await uploadBytes(sRef, file);
-          imageUrl = await getDownloadURL(sRef);
-        } catch (uploadErr: any) {
-          if (uploadErr?.message?.includes('CORS') || uploadErr?.code === 'storage/unknown') {
-            toast({
-              title: "CORS Error",
-              description: "Image upload failed due to CORS configuration. Please ensure Firebase Storage CORS is set.",
-              variant: "destructive",
-            });
-          } else {
-            toast({
-              title: "Upload Error",
-              description: uploadErr?.message || "Failed to upload image.",
-              variant: "destructive",
-            });
-          }
-          return;
-        }
+        galleryImageKeys.forEach((key) => {
+          const file = selectedFiles[key];
+          if (file) formDataToSend!.append('images', file);
+        });
+      } else {
+        // No file, just send JSON
+        formDataToSend = null;
       }
 
-      const docData: Record<string, unknown> = { ...data, createdAt: serverTimestamp() };
-      if (imageUrl) {
-        if (category === 'gallery') {
-          docData.images = imageUrl;
-        } else {
-          docData.image = imageUrl;
-        }
+      let res;
+      if (formDataToSend) {
+        res = await axios.post(endpoint, formDataToSend, { headers: { 'Content-Type': 'multipart/form-data' } });
+      } else {
+        res = await axios.post(endpoint, data);
       }
-
-      // Add to RTDB using mapped path
-      const path = collectionMap[category];
-      if (!path) throw new Error('Invalid category for RTDB');
-      const newRef = push(dbRef(rtdb, path));
-      await set(newRef, docData);
 
       toast({
         title: "Success!",
         description: `${category} data saved successfully`,
       });
+
+      // Refetch all data
+      // (You may want to optimize this to only fetch the relevant collection)
+      const [teamsRes, playersRes, matchesRes, newsRes, galleryRes] = await Promise.all([
+          axios.get(import.meta.env.VITE_API_BASE_URL + "/teams"),
+          axios.get(import.meta.env.VITE_API_BASE_URL + "/players"),
+          axios.get(import.meta.env.VITE_API_BASE_URL + "/matches"),
+          axios.get(import.meta.env.VITE_API_BASE_URL + "/news"),
+          axios.get(import.meta.env.VITE_API_BASE_URL + "/galleries"),
+      ]);
+      setTeams(teamsRes.data);
+      setPlayers(playersRes.data);
+      setMatches(matchesRes.data);
+      setNews(newsRes.data);
+      setGallery(galleryRes.data);
 
       // Reset form
       setFormData(prev => ({
@@ -422,14 +479,12 @@ export default function Admin() {
           return newFiles;
         });
       } else {
-        setSelectedFiles(prev => ({ ...prev, [fileKey || category]: null }));
+        setSelectedFiles(prev => ({ ...prev, [`${category}-logo`]: null, [`${category}-photo`]: null, [`${category}-image`]: null }));
       }
     } catch (error: any) {
-      // Log error for debugging
-      console.error('RTDB write error:', error?.message || error);
       toast({
         title: "Error",
-        description: error?.message || "Failed to save data. Please try again.",
+        description: error?.response?.data?.message || error?.message || "Failed to save data. Please try again.",
         variant: "destructive",
       });
     }
@@ -438,215 +493,102 @@ export default function Admin() {
 
   return (
     <div className="space-y-6">
-      {/* Admin Header */}
-      <Card className="p-4 border-green-200 bg-green-50">
-        <div className="flex items-center gap-3">
-          <Shield className="h-5 w-5 text-green-600" />
-          <div>
-            <p className="text-sm font-medium text-green-800">
-              Admin Panel
-            </p>
-            <p className="text-xs text-green-700">
-              You have full administrative access to manage content.
-            </p>
-          </div>
-        </div>
-      </Card>
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Admin Panel</h1>
-          <p className="text-muted-foreground mt-2">
-            Manage teams, players, matches, and content
-          </p>
-        </div>
-       
-      </div>
-      <div className="grid gap-4 md:grid-cols-5">
-        {isInitialLoading ? (
-          <>
-            <StatSkeleton />
-            <StatSkeleton />
-            <StatSkeleton />
-            <StatSkeleton />
-            <StatSkeleton />
-          </>
-        ) : (
-          <>
-            <Card className="text-center p-6 cricket-shadow">
-              <div className="text-3xl font-bold text-primary">{stats.totalTeams}</div>
-              <div className="text-sm text-muted-foreground">Teams</div>
-            </Card>
-            <Card className="text-center p-6 cricket-shadow">
-              <div className="text-3xl font-bold text-secondary">{stats.totalPlayers}</div>
-              <div className="text-sm text-muted-foreground">Players</div>
-            </Card>
-            <Card className="text-center p-6 cricket-shadow">
-              <div className="text-3xl font-bold text-accent">{stats.totalMatches}</div>
-              <div className="text-sm text-muted-foreground">Matches</div>
-            </Card>
-            <Card className="text-center p-6 cricket-shadow">
-              <div className="text-3xl font-bold text-destructive">{stats.totalNews}</div>
-              <div className="text-sm text-muted-foreground">News Articles</div>
-            </Card>
-            <Card className="text-center p-6 cricket-shadow">
-              <div className="text-3xl font-bold text-orange-500">{stats.totalGallery}</div>
-              <div className="text-sm text-muted-foreground">Gallery Items</div>
-            </Card>
-          </>
-        )}
-      </div>
+  {/* Admin Panel for Uploading Data Only */}
 
       {/* Admin Tabs */}
-      <Tabs defaultValue="teams" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="teams">Teams</TabsTrigger>
+
+      <Tabs defaultValue="points-table" className="space-y-6">
+
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="points-table">Points Table</TabsTrigger>
           <TabsTrigger value="players">Players</TabsTrigger>
-          <TabsTrigger value="matches">Matches</TabsTrigger>
+          <TabsTrigger value="matches">Fixtures</TabsTrigger>
           <TabsTrigger value="news">News</TabsTrigger>
           <TabsTrigger value="gallery">Gallery</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
-
-        <TabsContent value="teams" className="space-y-4">
+        <TabsContent value="points-table" className="space-y-4">
           <Card className="cricket-shadow">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5" />
-                Team Management
+                <BarChart3 className="h-5 w-5" />
+                Points Table Management
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Team Form */}
-              {teamsLoading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormSkeleton />
-                  <FormSkeleton />
+              {/* Points Table Upload Form */}
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const form = e.target as HTMLFormElement;
+                const formData = new FormData(form);
+                const data = {
+                  team: formData.get('team'),
+                  matches: formData.get('matches'),
+                  wins: formData.get('wins'),
+                  losses: formData.get('losses'),
+                  draws: formData.get('draws'),
+                  points: formData.get('points'),
+                  season: formData.get('season'),
+                };
+                try {
+                  await axios.post(import.meta.env.VITE_API_BASE_URL + '/points-table', data);
+                  toast({ title: 'Success!', description: 'Points table entry added.' });
+                  form.reset();
+                } catch (error: any) {
+                  toast({ title: 'Error', description: error?.response?.data?.message || error?.message || 'Failed to add entry.', variant: 'destructive' });
+                }
+              }} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="team">Team</Label>
+                    <Select name="team" required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select house/team" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="agni">Agni</SelectItem>
+                        <SelectItem value="aakash">Aakash</SelectItem>
+                        <SelectItem value="vayu">Vayu</SelectItem>
+                        <SelectItem value="jal">Jal</SelectItem>
+                        <SelectItem value="prudhvi">Prudhvi</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="matches">Matches</Label>
+                    <Input id="matches" name="matches" type="number" min="0" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="wins">Wins</Label>
+                    <Input id="wins" name="wins" type="number" min="0" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="losses">Losses</Label>
+                    <Input id="losses" name="losses" type="number" min="0" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="draws">Draws</Label>
+                    <Input id="draws" name="draws" type="number" min="0" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="points">Points</Label>
+                    <Input id="points" name="points" type="number" min="0" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="season">Season</Label>
+                    <Input id="season" name="season" placeholder="e.g. 2025" required />
+                  </div>
                 </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="team-name">Team Name</Label>
-                        <Input
-                          id="team-name"
-                          placeholder="Enter team name"
-                          value={formData.team.name}
-                          onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            team: { ...prev.team, name: e.target.value }
-                          }))}
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="team-coach">Coach Name</Label>
-                        <Input
-                          id="team-coach"
-                          placeholder="Enter coach name"
-                          value={formData.team.coach}
-                          onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            team: { ...prev.team, coach: e.target.value }
-                          }))}
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="team-captain">Captain</Label>
-                        <Input
-                          id="team-captain"
-                          placeholder="Enter captain name"
-                          value={formData.team.captain}
-                          onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            team: { ...prev.team, captain: e.target.value }
-                          }))}
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="team-ground">Home Ground</Label>
-                        <Input
-                          id="team-ground"
-                          placeholder="Enter home ground"
-                          value={formData.team.homeGround}
-                          onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            team: { ...prev.team, homeGround: e.target.value }
-                          }))}
-                        />
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="team-logo">Team Logo</Label>
-                        <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-6 text-center">
-                          <Upload className="h-10 w-10 mx-auto mb-2 text-muted-foreground" />
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) handleFileUpload('team-logo', file);
-                            }}
-                            className="hidden"
-                            id="team-logo-upload"
-                          />
-                          <Label 
-                            htmlFor="team-logo-upload" 
-                            className="cursor-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
-                          >
-                            Choose Logo
-                          </Label>
-                          {selectedFiles['team-logo'] && (
-                            <p className="text-sm text-muted-foreground mt-2">
-                              Selected: {selectedFiles['team-logo'].name}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="team-description">Description</Label>
-                        <Textarea
-                          id="team-description"
-                          placeholder="Team description..."
-                          rows={6}
-                          value={formData.team.description}
-                          onChange={(e) => setFormData(prev => ({
-                            ...prev,
-                            team: { ...prev.team, description: e.target.value }
-                          }))}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-2 pt-4">
-                    <Button onClick={() => handleSubmit('team', formData.team)} className="cricket-shadow">
-                      <Save className="mr-2 h-4 w-4" />
-                      Save Team
-                    </Button>
-                    <Dialog open={previewOpen === 'team'} onOpenChange={() => closePreview()}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" onClick={() => openPreview('team')}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          Preview
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                        <TeamPreview data={formData.team} />
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                </>
-              )}
+                <Button type="submit" className="cricket-shadow">Add Points Table Entry</Button>
+              </form>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="teams" className="space-y-4">
+          <div className="flex justify-center">
+            <h1 className="font-bold text-lg">Select where you can add data</h1>
+          </div>
         </TabsContent>
 
         <TabsContent value="players" className="space-y-4">
@@ -709,6 +651,24 @@ export default function Admin() {
                             <SelectItem value="bowler">Bowler</SelectItem>
                             <SelectItem value="all-rounder">All-rounder</SelectItem>
                             <SelectItem value="wicket-keeper">Wicket Keeper</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="player-house">House</Label>
+                        <Select onValueChange={(value) => setFormData(prev => ({
+                          ...prev,
+                          player: { ...prev.player, house: value }
+                        }))}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select house" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="agni">Agni</SelectItem>
+                            <SelectItem value="aakash">Aakash</SelectItem>
+                            <SelectItem value="vayu">Vayu</SelectItem>
+                            <SelectItem value="jal">Jal</SelectItem>
+                            <SelectItem value="prudhvi">Prudhvi</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -803,17 +763,7 @@ export default function Admin() {
                       <Save className="mr-2 h-4 w-4" />
                       Save Player
                     </Button>
-                    <Dialog open={previewOpen === 'player'} onOpenChange={() => closePreview()}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" onClick={() => openPreview('player')}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          Preview
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                        <PlayerPreview data={formData.player} />
-                      </DialogContent>
-                    </Dialog>
+                    
                   </div>
                 </>
               )}
@@ -850,13 +800,14 @@ export default function Admin() {
                             <SelectValue placeholder="Select Team 1" />
                           </SelectTrigger>
                           <SelectContent>
-                            {availableTeams?.map((team: any) => (
-                              <SelectItem key={team.id} value={team.name}>
-                                {team.name}
-                              </SelectItem>
-                            ))}
+                            <SelectItem value="agni">Agni</SelectItem>
+                            <SelectItem value="vayu">Vayu</SelectItem>
+                            <SelectItem value="aakash">Aakash</SelectItem>
+                            <SelectItem value="prudhvi">Prudhvi</SelectItem>
+                            <SelectItem value="jal">Jal</SelectItem>
                           </SelectContent>
                         </Select>
+                        
                       </div>
                       
                       <div className="space-y-2">
@@ -866,14 +817,15 @@ export default function Admin() {
                           match: { ...prev.match, team2: value }
                         }))}>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Team 2" />
+                          <SelectValue placeholder="Select Team 2" />
                           </SelectTrigger>
                           <SelectContent>
-                            {availableTeams?.map((team: any) => (
-                              <SelectItem key={team.id} value={team.name}>
-                                {team.name}
-                              </SelectItem>
-                            ))}
+                          {/* 5 teams only */}
+                          <SelectItem value="agni">Agni</SelectItem>
+                          <SelectItem value="vayu">Vayu</SelectItem>
+                          <SelectItem value="aakash">Aakash</SelectItem>
+                          <SelectItem value="prudhvi">Prudhvi</SelectItem>
+                          <SelectItem value="jal">Jal</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -949,17 +901,7 @@ export default function Admin() {
                       <Save className="mr-2 h-4 w-4" />
                       Schedule Match
                     </Button>
-                    <Dialog open={previewOpen === 'match'} onOpenChange={() => closePreview()}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" onClick={() => openPreview('match')}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          Preview
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                        <MatchPreview data={formData.match} />
-                      </DialogContent>
-                    </Dialog>
+                    
                   </div>
                 </>
               )}
@@ -1068,17 +1010,7 @@ export default function Admin() {
                       <Save className="mr-2 h-4 w-4" />
                       Publish Article
                     </Button>
-                    <Dialog open={previewOpen === 'news'} onOpenChange={() => closePreview()}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" onClick={() => openPreview('news')}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          Preview
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                        <NewsPreview data={formData.news} />
-                      </DialogContent>
-                    </Dialog>
+                    
                   </div>
                 </>
               )}
@@ -1190,17 +1122,7 @@ export default function Admin() {
                       <Save className="mr-2 h-4 w-4" />
                       Upload to Gallery
                     </Button>
-                    <Dialog open={previewOpen === 'gallery'} onOpenChange={() => closePreview()}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" onClick={() => openPreview('gallery')}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          Preview
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                        <GalleryPreview data={formData.gallery} />
-                      </DialogContent>
-                    </Dialog>
+                    
                   </div>
                 </>
               )}
@@ -1263,3 +1185,4 @@ export default function Admin() {
     </div>
   );
 }
+

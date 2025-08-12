@@ -5,20 +5,21 @@ import { getStorage } from "firebase/storage";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAVm8p2H4_BWoK4Ul-HEaFFoc3qLOv9KGU",
-  authDomain: "cricket-9924d.firebaseapp.com",
-  databaseURL: "https://cricket-9924d-default-rtdb.firebaseio.com",
-  projectId: "cricket-9924d",
-  storageBucket: "cricket-9924d.appspot.com",
-  messagingSenderId: "600545395656",
-  appId: "1:600545395656:web:ae1084561c44a51e71b6fd",
-  measurementId: "G-WHD3L65E76"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 
 // Initialize Firebase only if no apps are already initialized
 
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+export default app;
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const rtdb = getDatabase(app);

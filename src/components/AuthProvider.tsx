@@ -1,13 +1,14 @@
+
 import { createContext, useContext, useEffect, useState } from "react";
-import { User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut as firebaseSignOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import axios from "axios";
+
 
 interface AuthContextType {
-  user: User | null;
+  user: string | null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
+  role: string | null;
+  signIn: (username: string, password: string) => Promise<void>;
+  signOut: () => void;
   isAdmin: boolean;
 }
 
@@ -22,63 +23,54 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+
+  const [user, setUser] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Admin emails - in a real app, this would be in a database with roles
-  const adminEmails = [
-    'admin@cricket.com', 
-    'admin@housescricket.com',
-    'superadmin@cricket.com',
-    'moderator@cricket.com'
-  ];
-
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return unsubscribe;
+    // On mount, check localStorage for token/role
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+    const userRole = localStorage.getItem('role');
+    if (token && username && userRole) {
+      setUser(username);
+      setRole(userRole);
+    }
+    setLoading(false);
   }, []);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (username: string, password: string) => {
+    setLoading(true);
     try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      
-      // Additional check: Verify admin status immediately after login
-      if (!adminEmails.includes(result.user.email || '')) {
-        // If not admin, sign them out immediately
-        await firebaseSignOut(auth);
-        throw new Error('Access denied. Admin privileges required.');
-      }
-      
-      return result;
+      const res = await axios.post('http://localhost:5001/api/auth/login', { username, password });
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('role', res.data.role);
+      localStorage.setItem('username', username);
+      setUser(username);
+      setRole(res.data.role);
     } catch (error) {
-      console.error('Sign in error:', error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const signUp = async (email: string, password: string) => {
-    // Prevent non-admin signup through this method
-    if (!adminEmails.includes(email)) {
-      throw new Error('Registration is restricted to authorized personnel only.');
-    }
-    await createUserWithEmailAndPassword(auth, email, password);
+  const signOut = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('username');
+    setUser(null);
+    setRole(null);
   };
 
-  const signOut = async () => {
-    await firebaseSignOut(auth);
-  };
-
-  const isAdmin = user ? adminEmails.includes(user.email || '') : false;
+  const isAdmin = role === 'admin';
 
   const value = {
     user,
     loading,
+    role,
     signIn,
-    signUp,
     signOut,
     isAdmin,
   };

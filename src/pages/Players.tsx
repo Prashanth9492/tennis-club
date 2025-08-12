@@ -2,148 +2,51 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Trophy, Target, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { User, Trophy, TrendingUp } from "lucide-react";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 interface Player {
-  id: string;
+  _id: string;
   name: string;
-  role?: string;
+  position?: string;
   team?: string;
   age?: number;
+  battingStyle?: string;
+  bowlingStyle?: string;
+  description?: string;
+  image?: string;
   batting_average?: number;
   bowling_average?: number;
-  image?: string;
+  house?: string;
 }
 
-export default function Players() {
-  // Sample mock data for demo mode
-  const mockPlayers: Player[] = [
-    {
-      id: '1',
-      name: 'Rohit Sharma',
-      role: 'Batsman',
-      team: 'SRKR Tigers',
-      age: 28,
-      batting_average: 45.2,
-      bowling_average: 0,
-      image: '',
-    },
-    {
-      id: '2',
-      name: 'Jasprit Bumrah',
-      role: 'Bowler',
-      team: 'SRKR Lions',
-      age: 26,
-      batting_average: 12.5,
-      bowling_average: 21.3,
-      image: '',
-    },
-    {
-      id: '2',
-      name: 'Jasprit Bumrah',
-      role: 'Bowler',
-      team: 'SRKR Lions',
-      age: 26,
-      batting_average: 12.5,
-      bowling_average: 21.3,
-      image: '',
-    },
-    {
-      id: '3',
-      name: 'Hardik Pandya',
-      role: 'All-rounder',
-      team: 'SRKR Eagles',
-      age: 27,
-      batting_average: 32.8,
-      bowling_average: 28.7,
-      image: '',
-    },
-    {
-      id: '4',
-      name: 'MS Dhoni',
-      role: 'Wicket Keeper',
-      team: 'SRKR Tigers',
-      age: 34,
-      batting_average: 39.4,
-      bowling_average: 0,
-      image: '',
-    },
-  ];
-  // Always use mock data for display
-  const displayPlayers = mockPlayers;
+const Players = () => {
+  const [players, setPlayers] = useState<Player[]>([]);
+  useEffect(() => {
+    axios.get("http://localhost:5001/api/players")
+      .then(res => setPlayers(res.data))
+      .catch(() => setPlayers([]));
+  }, []);
 
   return (
     <div className="space-y-6">
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Players</h1>
           <p className="text-muted-foreground mt-2">
-            Discover the {displayPlayers.length} talented cricketers in our championship
+            Discover the {players.length} talented cricketers in our championship
           </p>
         </div>
         <Badge className="cricket-shadow text-lg px-4 py-2">
           <User className="mr-2 h-5 w-5" />
-          {displayPlayers.length} Players
+          {players.length} Players
         </Badge>
       </div>
-
-      {/* Players Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {displayPlayers.map((player) => (
-          <Card key={player.id} className="cricket-shadow hover:scale-105 transition-transform duration-200">
-            <CardHeader className="text-center pb-2">
-              <Avatar className="w-20 h-20 mx-auto mb-2">
-                <AvatarImage src={player.image} alt={player.name} />
-                <AvatarFallback className="text-lg">
-                  {player.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-              <CardTitle className="text-lg">{player.name}</CardTitle>
-              {player.team && (
-                <Badge variant="secondary" className="mt-1">
-                  {player.team}
-                </Badge>
-              )}
-            </CardHeader>
-            <CardContent className="text-center space-y-3">
-              {player.role && (
-                <div className="text-sm">
-                  <Badge variant="outline">{player.role}</Badge>
-                </div>
-              )}
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                {player.age && (
-                  <div className="bg-muted/50 p-2 rounded">
-                    <div className="font-medium">{player.age}</div>
-                    <div className="text-muted-foreground">Age</div>
-                  </div>
-                )}
-                {player.batting_average && (
-                  <div className="bg-muted/50 p-2 rounded">
-                    <div className="font-medium">{player.batting_average.toFixed(1)}</div>
-                    <div className="text-muted-foreground">Bat Avg</div>
-                  </div>
-                )}
-                {player.bowling_average && (
-                  <div className="bg-muted/50 p-2 rounded">
-                    <div className="font-medium">{player.bowling_average.toFixed(1)}</div>
-                    <div className="text-muted-foreground">Bowl Avg</div>
-                  </div>
-                )}
-              </div>
-              <Button variant="outline" size="sm" className="w-full cricket-shadow">
-                <TrendingUp className="mr-1 h-4 w-4" />
-                View Stats
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Statistics Summary */}
-      <Card className="cricket-shadow">
+ {/* Statistics Summary */}
+      <Card className="cricket-shadow mt-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-yellow-500" />
@@ -153,30 +56,88 @@ export default function Players() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-4">
             <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <div className="text-2xl font-bold text-primary">{displayPlayers.length}</div>
+              <div className="text-2xl font-bold text-primary">{players.length}</div>
               <div className="text-sm text-muted-foreground">Total Players</div>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <div className="text-2xl font-bold text-secondary">
-                {displayPlayers.filter(p => p.role === 'Batsman').length}
+                {players.filter(p => p.position === 'batsman').length}
               </div>
               <div className="text-sm text-muted-foreground">Batsmen</div>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <div className="text-2xl font-bold text-accent">
-                {displayPlayers.filter(p => p.role === 'Bowler').length}
+                {players.filter(p => p.position === 'bowler').length}
               </div>
               <div className="text-sm text-muted-foreground">Bowlers</div>
             </div>
             <div className="text-center p-4 bg-muted/50 rounded-lg">
               <div className="text-2xl font-bold text-orange-500">
-                {displayPlayers.filter(p => p.role === 'All-rounder').length}
+                {players.filter(p => p.position === 'all-rounder').length}
               </div>
               <div className="text-sm text-muted-foreground">All-rounders</div>
             </div>
           </div>
         </CardContent>
       </Card>
+      {/* Players Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {players.map((player) => (
+          <Card key={player._id} className="cricket-shadow hover:scale-105 transition-transform duration-200">
+  <CardHeader className="text-center pb-2">
+    <Avatar className="w-20 h-20 mx-auto mb-2">
+      <AvatarImage src={player.image} alt={player.name} />
+      <AvatarFallback className="text-lg">
+        {player.name.split(' ').map(n => n[0]).join('')}
+      </AvatarFallback>
+    </Avatar>
+    <CardTitle className="text-lg">{player.name}</CardTitle>
+  {player.team && <Badge variant="secondary" className="mt-1">{player.team}</Badge>}
+  {player.house && <div className="text-xs mt-1 text-muted-foreground">🏠 House: {player.house.charAt(0).toUpperCase() + player.house.slice(1)}</div>}
+  </CardHeader>
+
+  <CardContent className="text-center space-y-3">
+    {player.position && (
+      <div className="text-sm">
+        <Badge variant="outline">{player.position}</Badge>
+      </div>
+    )}
+    <div className="grid grid-cols-2 gap-2 text-xs">
+      {player.age && (
+        <div className="bg-muted/50 p-2 rounded">
+          <div className="font-medium">{player.age}</div>
+          <div className="text-muted-foreground">Age</div>
+        </div>
+      )}
+      {player.battingStyle && (
+        <div className="bg-muted/50 p-2 rounded">
+          <div className="font-medium">{player.battingStyle}</div>
+          <div className="text-muted-foreground">Bat Style</div>
+        </div>
+      )}
+      {player.bowlingStyle && (
+        <div className="bg-muted/50 p-2 rounded">
+          <div className="font-medium">{player.bowlingStyle}</div>
+          <div className="text-muted-foreground">Bowl Style</div>
+        </div>
+      )}
+    </div>
+    {player.description && (
+      <p className="text-xs text-muted-foreground">{player.description}</p>
+    )}
+    <Button variant="outline" size="sm" className="w-full cricket-shadow">
+      <TrendingUp className="mr-1 h-4 w-4" />
+      View Stats
+    </Button>
+  </CardContent>
+</Card>
+
+        ))}
+      </div>
+
+     
     </div>
   );
-}
+};
+
+export default Players;

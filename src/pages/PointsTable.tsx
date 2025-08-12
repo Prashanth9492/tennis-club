@@ -1,4 +1,6 @@
-import { useCollection } from "@/hooks/useFirebase";
+
+import { useEffect, useState } from "react";
+import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -7,30 +9,30 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 
 interface Team {
-  id: string;
-  name: string;
+  _id?: string;
+  team: string;
   wins: number;
   losses: number;
+  draws?: number;
+  matches: number;
   points: number;
+  season: string;
   ranking?: number;
 }
 
+
+
 export default function PointsTable() {
-  const { data: teams, loading } = useCollection('teams');
+  const [pointsTable, setPointsTable] = useState<Team[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample points table data
-  const sampleTeams: Team[] = [
-    { id: '1', name: 'Mumbai Warriors', wins: 8, losses: 2, points: 16, ranking: 2 },
-    { id: '2', name: 'Chennai Eagles', wins: 7, losses: 3, points: 14, ranking: 1 },
-    { id: '3', name: 'Delhi Knights', wins: 6, losses: 4, points: 12, ranking: 4 },
-    { id: '4', name: 'Bangalore Tigers', wins: 6, losses: 4, points: 12, ranking: 3 },
-    { id: '5', name: 'Kolkata Panthers', wins: 5, losses: 5, points: 10, ranking: 5 },
-    { id: '6', name: 'Hyderabad Hawks', wins: 4, losses: 6, points: 8, ranking: 6 },
-    { id: '7', name: 'Punjab Lions', wins: 3, losses: 7, points: 6, ranking: 7 },
-    { id: '8', name: 'Rajasthan Royals', wins: 1, losses: 9, points: 2, ranking: 8 }
-  ];
-
-  const displayTeams = teams.length > 0 ? teams : sampleTeams;
+  useEffect(() => {
+    setLoading(true);
+    axios.get('/api/points-table')
+      .then(res => setPointsTable(res.data))
+      .catch(() => setPointsTable([]))
+      .finally(() => setLoading(false));
+  }, []);
 
   const calculateWinPercentage = (wins: number, losses: number) => {
     const total = wins + losses;
@@ -72,7 +74,6 @@ export default function PointsTable() {
           </div>
           <Skeleton className="h-8 w-32" />
         </div>
-        
         <Card className="cricket-shadow">
           <CardHeader>
             <Skeleton className="h-6 w-48" />
@@ -100,127 +101,86 @@ export default function PointsTable() {
     );
   }
 
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="space-y-6"
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Points Table</h1>
-          <p className="text-muted-foreground mt-2">
-            Current tournament standings and team rankings
-          </p>
-        </div>
-        
-        <Badge className="cricket-shadow text-lg px-4 py-2">
-          <Trophy className="mr-2 h-5 w-5" />
-          Season 2024
-        </Badge>
-      </div>
 
-      {/* Points Table */}
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.1 }}
-      >
-        <Card className="cricket-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-5 w-5" />
-              Tournament Standings
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-16">Pos</TableHead>
-                    <TableHead className="w-8"></TableHead>
-                    <TableHead>Team</TableHead>
-                    <TableHead className="text-center">Played</TableHead>
-                    <TableHead className="text-center">Won</TableHead>
-                    <TableHead className="text-center">Lost</TableHead>
-                    <TableHead className="text-center">Win%</TableHead>
-                    <TableHead className="text-center">Points</TableHead>
-                    <TableHead className="text-center">Status</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {displayTeams.map((team: any, index: number) => {
-                    const position = index + 1;
-                    const totalMatches = team.wins + team.losses;
-                    const winPercentage = calculateWinPercentage(team.wins, team.losses);
-                    
-                    return (
-                      <motion.tr 
-                        key={team.id}
-                        initial={{ x: -20, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: 0.05 * index }}
-                        className={`${position <= 2 ? "bg-green-50 dark:bg-green-950/20" : ""} border-b`}
-                      >
-                        <TableCell className="font-bold text-lg">
-                          {position}
-                        </TableCell>
-                        <TableCell>
-                          {getPositionIcon(position, team.ranking)}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-3">
-                            <div className="text-2xl">🏏</div>
-                            <div>
-                              <div className="font-semibold">{team.name}</div>
-                              {getPositionBadge(position)}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center font-medium">
-                          {totalMatches}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <span className="text-green-600 font-semibold">{team.wins}</span>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <span className="text-red-600 font-semibold">{team.losses}</span>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <span className="font-medium">{winPercentage}%</span>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <span className="text-primary font-bold text-lg">{team.points}</span>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {position <= 2 && (
-                            <Badge variant="default" className="bg-green-500">
-                              Qualified
-                            </Badge>
-                          )}
-                          {position > 2 && position <= 4 && (
-                            <Badge variant="secondary">
-                              Playoffs
-                            </Badge>
-                          )}
-                          {position > 4 && (
-                            <Badge variant="outline">
-                              Eliminated
-                            </Badge>
-                          )}
-                        </TableCell>
-                      </motion.tr>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+  // Group by season
+  const groupedBySeason = pointsTable.reduce((acc: Record<string, Team[]>, entry) => {
+    if (!acc[entry.season]) acc[entry.season] = [];
+    acc[entry.season].push(entry);
+    return acc;
+  }, {});
+
+  return (
+    <motion.div>
+      {Object.keys(groupedBySeason).length === 0 ? (
+        <div className="text-center py-8">No points table data available.</div>
+      ) : (
+        Object.entries(groupedBySeason).map(([season, teams]) => (
+          <div key={season} className="mb-10">
+            <h2 className="text-2xl font-bold mb-4">Season: {season}</h2>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-16">Pos</TableHead>
+                  <TableHead className="w-8"></TableHead>
+                  <TableHead>Team</TableHead>
+                  <TableHead className="text-center">Played</TableHead>
+                  <TableHead className="text-center">Won</TableHead>
+                  <TableHead className="text-center">Lost</TableHead>
+                  <TableHead className="text-center">Win%</TableHead>
+                  <TableHead className="text-center">Points</TableHead>
+                  <TableHead className="text-center">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {teams
+                  .sort((a, b) => b.points - a.points)
+                  .map((team: Team, index: number) => (
+                  <tr
+                    key={team._id || team.team}
+                    className={`${index + 1 <= 2 ? "bg-green-50 dark:bg-green-950/20" : ""} border-b`}
+                  >
+                    <TableCell className="font-bold text-lg">{index + 1}</TableCell>
+                    <TableCell>{getPositionIcon(index + 1, team.ranking)}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div className="text-2xl">🏏</div>
+                        <div>
+                          <div className="font-semibold">{team.team}</div>
+                          {getPositionBadge(index + 1)}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-center font-medium">{team.matches}</TableCell>
+                    <TableCell className="text-center">
+                      <span className="text-green-600 font-semibold">{team.wins}</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="text-red-600 font-semibold">{team.losses}</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="font-medium">{calculateWinPercentage(team.wins, team.losses)}%</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <span className="text-primary font-bold text-lg">{team.points}</span>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      {index + 1 <= 2 && (
+                        <Badge variant="default" className="bg-green-500">Qualified</Badge>
+                      )}
+                      {index + 1 > 2 && index + 1 <= 4 && (
+                        <Badge variant="secondary">Playoffs</Badge>
+                      )}
+                      {index + 1 > 4 && (
+                        <Badge variant="outline">Eliminated</Badge>
+                      )}
+                    </TableCell>
+                  </tr>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ))
+      )}
 
       {/* Legend */}
       <motion.div

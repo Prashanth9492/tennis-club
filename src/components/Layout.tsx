@@ -1,19 +1,33 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Menu, LogOut } from "lucide-react";
-import { useAuth } from "@/components/AuthProvider";
 import { useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import srkrLogo from "@/assets/srkrec-logo.png";
+import { getAuth, signOut as firebaseSignOut } from 'firebase/auth';
+import app from '../firebaseConfig';
+import { useEffect, useState } from 'react';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
+
 export function Layout({ children }: LayoutProps) {
-  const { user, signOut } = useAuth();
+  const auth = getAuth(app);
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      setUser(firebaseUser);
+    });
+    return () => unsubscribe();
+  }, [auth]);
+  const handleLogout = async () => {
+    await firebaseSignOut(auth);
+    setUser(null);
+  };
   const location = useLocation();
-  
+
   // Don't show sidebar on auth page
   if (location.pathname === "/auth") {
     return <main className="min-h-screen bg-background">{children}</main>;
@@ -39,24 +53,18 @@ export function Layout({ children }: LayoutProps) {
                   className="h-10 w-auto"
                 />
               </div>
-              
               <div className="flex items-center gap-4">
-                {/* Live indicator 
-                <div className="flex items-center gap-2 px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
-                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                  LIVE
-                </div>*/}
-
-                {/* Auth controls */}
                 {user ? (
-                  <Button variant="outline" size="sm" onClick={signOut}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Sign Out
-                  </Button>
+                  <>
+                    <span className="text-sm font-medium">{user.displayName || user.email}</span>
+                    <Button size="sm" variant="outline" onClick={handleLogout}>
+                      <LogOut className="h-4 w-4 mr-1" /> Logout
+                    </Button>
+                  </>
                 ) : (
-                  <Button variant="default" size="sm" asChild>
-                    <Link to="/auth">Sign In</Link>
-                  </Button>
+                  <Link to="/firebase-login">
+                    <Button size="sm" variant="outline">Login</Button>
+                  </Link>
                 )}
               </div>
             </div>

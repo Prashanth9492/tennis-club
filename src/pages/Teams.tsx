@@ -4,13 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Trophy, Users, Star, TrendingUp, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import aakash from "@/assets/aakash.png";
+import srkr from "@/assets/srkrec-logo.png";
+import agni from "@/assets/agni.jpg";
 
 // Mock data for the 5 teams with wins and past matches
 const teams = [
   {
     id: "1",
     name: "AGNI",
-    logo: "https://static.vecteezy.com/system/resources/thumbnails/034/088/586/small/backdrop-of-fiery-blaze-and-torch-the-heat-and-haze-pattern-ai-generated-photo.jpg",
+    logo: agni,
     captain: "Arun Sharma",
     home_ground: "Fire Stadium",
     founded: 2010,
@@ -24,7 +27,7 @@ const teams = [
   {
     id: "2",
     name: "AAKASH",
-    logo: "data:image/jpeg;base64,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",
+    logo: aakash,
     captain: "Vikram Singh",
     home_ground: "Sky Arena",
     founded: 2012,
@@ -209,10 +212,7 @@ export default function Teams() {
                       <Users className="mr-1 h-4 w-4" />
                       Players
                     </Button>
-                    <Button variant="outline" size="sm" className="shadow-sm hover:bg-primary/10">
-                      <TrendingUp className="mr-1 h-4 w-4" />
-                      Stats
-                    </Button>
+                    
                     <Button
                       variant="outline"
                       size="sm"
@@ -229,7 +229,7 @@ export default function Teams() {
           ))}
         </div>
 
-        {/* Championship Summary */}
+        {/* Championship Summary 
         <Card className="shadow-lg border border-primary/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -253,7 +253,7 @@ export default function Teams() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card>*/}
       </div>
 
       {/* Details Page */}

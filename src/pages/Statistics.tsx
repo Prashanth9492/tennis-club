@@ -129,7 +129,7 @@ export default function Statistics() {
         
         <Badge className="cricket-shadow text-lg px-4 py-2">
           <Trophy className="mr-2 h-5 w-5" />
-          Season 2024
+          Season 2025
         </Badge>
       </div>
 

@@ -34,7 +34,7 @@ const mainItems = [
 ];
 
 const cricketItems = [
-  { title: "Statistics", url: "/stats", icon: BarChart3 },
+  //{ title: "Statistics", url: "/stats", icon: BarChart3 },
   { title: "Points Table", url: "/points-table", icon: Table },
   { title: "News", url: "/news", icon: Newspaper },
   { title: "Gallery", url: "/gallery", icon: Camera },
@@ -69,6 +69,7 @@ export function AppSidebar() {
     }`;
 
   return (
+    
     <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible="icon">
       <SidebarContent>
         {/* Cricket Hub Branding */}

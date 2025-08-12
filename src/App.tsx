@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -16,9 +17,9 @@ import PointsTable from "./pages/PointsTable";
 import News from "./pages/News";
 import Gallery from "./pages/Gallery";
 import Admin from "./pages/Admin";
-import AdminLogin from "./pages/AdminLogin";
-import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import FirebaseLogin from "./pages/FirebaseLogin";
 
 const queryClient = new QueryClient();
 
@@ -41,14 +42,18 @@ const App = () => (
               <Route path="/news" element={<News />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/admindashboard" element={<Admin />} />
+              <Route path="/firebase-login" element={<FirebaseLogin />} />
 
               <Route path="/admin" element={
-                <ProtectedRoute adminOnly={true} redirectTo="/admin-login">
+                <ProtectedRoute adminOnly redirectTo="/auth">
                   <Admin />
                 </ProtectedRoute>
               } />
-              <Route path="/admin-login" element={<AdminLogin />} />
-              <Route path="/auth" element={<Auth />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute redirectTo="/login">
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>

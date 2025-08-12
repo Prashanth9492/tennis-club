@@ -1,0 +1,63 @@
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
+
+
+
+
+import teamsRouter from './routes/teams.js';
+import playersRouter from './routes/players.js';
+import matchesRouter from './routes/matches.js';
+import newsRouter from './routes/news.js';
+import galleryRouter from './routes/gallery.js';
+import pointsTableRouter from './routes/pointsTable.js';
+import authRouter from './routes/auth.js';
+
+
+dotenv.config();
+
+const app = express(); // ✅ initialize app first
+
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+app.use(express.json());
+app.use(cookieParser());
+
+// ✅ Add the route after app is defined
+app.get('/', (req, res) => {
+  res.send('API is running');
+});
+
+// For file uploads
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// API routes
+
+
+app.use('/api/auth', authRouter);
+app.use('/api/teams', teamsRouter);
+app.use('/api/players', playersRouter);
+app.use('/api/matches', matchesRouter);
+app.use('/api/news', newsRouter);
+app.use('/api/galleries', galleryRouter);
+app.use('/api/points-table', pointsTableRouter);
+
+const PORT = process.env.PORT || 5000;
+
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`✅ Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB connection error:', err);
+  });

@@ -1,6 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Play, TrendingUp, Trophy } from "lucide-react";
 import cricketHero from "@/assets/cricket-hero.jpg";
+import { Link } from 'react-router-dom';
+import aakash from "@/assets/aakash.png";
+import srkr from "@/assets/srkrec-logo.png";
+import agni from "@/assets/agni.jpg";
+
 
 export function HeroSection() {
   return (
@@ -31,15 +36,18 @@ export function HeroSection() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Button size="lg" className="cricket-shadow hover:scale-105 smooth-transition bg-secondary text-secondary-foreground hover:bg-secondary/90">
-              <Play className="mr-2 h-5 w-5" />
-              Watch Live
-            </Button>
-            
-            <Button size="lg" className="cricket-shadow hover:scale-105 smooth-transition bg-secondary text-secondary-foreground hover:bg-secondary/90">
-              <TrendingUp className="mr-2 h-5 w-5" />
-              View Statistics
-            </Button>
+            <Link to="/live-scores">
+              <Button size="lg" className="cricket-shadow hover:scale-105 smooth-transition bg-secondary text-secondary-foreground hover:bg-secondary/90">
+                <Play className="mr-2 h-5 w-5" />
+                Watch Live
+              </Button>
+            </Link>
+            <Link to="/teams">
+              <Button size="lg" className="cricket-shadow hover:scale-105 smooth-transition bg-secondary text-secondary-foreground hover:bg-secondary/90">
+                <TrendingUp className="mr-2 h-5 w-5" />
+                View Teams
+              </Button>
+            </Link>
           </div>
 
           {/* Live Score Cards */}
@@ -48,44 +56,48 @@ export function HeroSection() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <Trophy className="h-5 w-5 text-secondary" />
-                  Live Match
+                  Houses
                 </h3>
                 <span className="bg-red-500 text-white px-2 py-1 rounded text-sm font-medium">
-                  LIVE
+                  5 Houses
                 </span>
               </div>
               
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">St. Johns College</span>
-                  <span className="text-2xl font-bold text-secondary">156/4</span>
+                <div className="space-y-2">
+                <div className="flex justify-center items-center gap-4 text-3xl flex-wrap">
+                  <img src={aakash} alt="Aaksh House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
+                  <img src={aakash} alt="Prudhvi House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
+                  <img src={agni} alt="Vayu House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
+                  <img src={aakash} alt="Jal House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
+                  <img src={agni} alt="Agni House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
                 </div>
-                <div className="flex justify-between items-center text-white/70">
-                  <span>vs Christ University</span>
-                  <span className="text-sm">18.2 overs</span>
+                <div className="flex justify-center items-center text-white/70 mt-2 gap-3 flex-wrap">
+                  <span>Aaksh</span>
+                  <span>Prudhvi</span>
+                  <span>Vayu</span>
+                  <span>Jal</span>
+                  <span>Agni</span>
                 </div>
-              </div>
+                </div>
             </div>
 
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold flex items-center gap-2">
                   <Trophy className="h-5 w-5 text-secondary" />
-                  Recent Result
+                  Display
                 </h3>
                 <span className="bg-green-500 text-white px-2 py-1 rounded text-sm font-medium">
-                  COMPLETED
+                  SHOWCASE
                 </span>
               </div>
               
               <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Mount Carmel</span>
-                  <span className="text-2xl font-bold text-secondary">189/6</span>
+                <div className="flex justify-center items-center text-2xl font-bold text-secondary">
+                  House Spirit On Display!
                 </div>
-                <div className="flex justify-between items-center text-white/70">
-                  <span>beat Bangalore University</span>
-                  <span className="text-sm">Won by 34 runs</span>
+                <div className="flex justify-center items-center text-white/70">
+                  <span>Cheer for your house and show your colors!</span>
                 </div>
               </div>
             </div>
@@ -107,3 +119,4 @@ export function HeroSection() {
     </div>
   );
 }
+
