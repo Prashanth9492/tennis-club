@@ -98,8 +98,7 @@ export function HeroSection() {
               <div className="space-y-2">
                 <div className="flex justify-center items-center text-2xl font-bold text-secondary">
                   House Spirit On Display!
-                </div>
-                <div className="flex justify-center items-center text-white/70">
+                </div>                <div className="flex justify-center items-center text-white/70">
                   <span>Cheer for your house and show your colors!</span>
                 </div>
               </div>
