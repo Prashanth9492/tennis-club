@@ -23,10 +23,14 @@ export function HeroSection() {
       {/* Hero Content */}
       <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-4">
         <div className="animate-hero-fade">
+          <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight"><span className="block text-secondary animate-cricket-bounce inline-block ml-4">
+              CSD-CSIT
+            </span></h1>
           <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-            College Cricket
+            
+            College Cricket Champions
             <span className="block text-secondary animate-cricket-bounce inline-block ml-4">
-              Champions
+              
             </span>
           </h1>
           

@@ -86,7 +86,7 @@ const Gallery: React.FC = () => {
           <div key={item._id + item.imageUrl} className="relative group overflow-hidden rounded-lg shadow hover:shadow-lg transition">
             {item.imageUrl ? (
               <img
-                src={item.imageUrl}
+                src={item.imageUrl.startsWith('http') ? item.imageUrl : `http://localhost:5001${item.imageUrl}`}
                 alt={item.title || 'Gallery Image'}
                 className="w-full h-60 object-cover transition-transform duration-300 group-hover:scale-105"
               />

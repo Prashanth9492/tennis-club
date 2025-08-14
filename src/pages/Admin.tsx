@@ -257,7 +257,13 @@ export default function Admin() {
     <div className="space-y-4">
       <div className="flex items-center gap-4 p-4 border rounded-lg">
         <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-          {selectedFiles['player-photo'] ? (
+          {data.photoUrl ? (
+            <img 
+              src={data.photoUrl.startsWith('http') ? data.photoUrl : `${import.meta.env.VITE_API_BASE_URL.replace('/api','')}${data.photoUrl}`}
+              alt="Player Photo" 
+              className="w-full h-full object-cover rounded-lg"
+            />
+          ) : selectedFiles['player-photo'] ? (
             <img 
               src={URL.createObjectURL(selectedFiles['player-photo'])} 
               alt="Player Photo" 
@@ -314,13 +320,19 @@ export default function Admin() {
     <div className="space-y-4">
       <div className="p-4 border rounded-lg">
         <div className="flex items-start gap-4">
-          {selectedFiles['news-image'] && (
+          {data.imageUrl ? (
+            <img 
+              src={data.imageUrl.startsWith('http') ? data.imageUrl : `${import.meta.env.VITE_API_BASE_URL.replace('/api','')}${data.imageUrl}`}
+              alt="News Image" 
+              className="w-32 h-24 object-cover rounded-lg"
+            />
+          ) : selectedFiles['news-image'] ? (
             <img 
               src={URL.createObjectURL(selectedFiles['news-image'])} 
               alt="News Image" 
               className="w-32 h-24 object-cover rounded-lg"
             />
-          )}
+          ) : null}
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="secondary">{data.category}</Badge>
@@ -346,7 +358,17 @@ export default function Admin() {
           {data.description || 'Gallery description will appear here...'}
         </p>
         <div className="grid grid-cols-3 gap-2">
-          {Object.entries(selectedFiles).filter(([key]) => key.startsWith('gallery-image')).map(([key, file]) => (
+          {Array.isArray(data.imageUrls) && data.imageUrls.length > 0 ? (
+            data.imageUrls.map((url: string, idx: number) => (
+              <div key={idx} className="aspect-square bg-muted rounded-lg overflow-hidden">
+                <img 
+                  src={url}
+                  alt="Gallery Image"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))
+          ) : Object.entries(selectedFiles).filter(([key]) => key.startsWith('gallery-image')).map(([key, file]) => (
             <div key={key} className="aspect-square bg-muted rounded-lg overflow-hidden">
               {file && (
                 <img 
@@ -357,7 +379,7 @@ export default function Admin() {
               )}
             </div>
           ))}
-          {Object.keys(selectedFiles).filter(key => key.startsWith('gallery-image')).length === 0 && (
+          {(!Array.isArray(data.imageUrls) || data.imageUrls.length === 0) && Object.keys(selectedFiles).filter(key => key.startsWith('gallery-image')).length === 0 && (
             <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
               <Image className="h-8 w-8 text-muted-foreground" />
             </div>
