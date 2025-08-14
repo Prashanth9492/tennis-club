@@ -15,7 +15,7 @@ interface Player {
   battingStyle?: string;
   bowlingStyle?: string;
   description?: string;
-  image?: string;
+  photoUrl?: string;
   batting_average?: number;
   bowling_average?: number;
   house?: string;
@@ -84,17 +84,17 @@ const Players = () => {
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {players.map((player) => (
           <Card key={player._id} className="cricket-shadow hover:scale-105 transition-transform duration-200">
-  <CardHeader className="text-center pb-2">
-    <Avatar className="w-20 h-20 mx-auto mb-2">
-      <AvatarImage src={player.image} alt={player.name} />
-      <AvatarFallback className="text-lg">
-        {player.name.split(' ').map(n => n[0]).join('')}
-      </AvatarFallback>
-    </Avatar>
-    <CardTitle className="text-lg">{player.name}</CardTitle>
-  {player.team && <Badge variant="secondary" className="mt-1">{player.team}</Badge>}
-  {player.house && <div className="text-xs mt-1 text-muted-foreground">🏠 House: {player.house.charAt(0).toUpperCase() + player.house.slice(1)}</div>}
-  </CardHeader>
+        <CardHeader className="text-center pb-2">
+          <Avatar className="w-20 h-20 mx-auto mb-2">
+            <AvatarImage src={player.photoUrl ? (player.photoUrl.startsWith('http') ? player.photoUrl : `http://localhost:5001${player.photoUrl}`) : undefined} alt={player.name} />
+            <AvatarFallback className="text-lg">
+              {player.name.split(' ').map(n => n[0]).join('')}
+            </AvatarFallback>
+          </Avatar>
+          <CardTitle className="text-lg">{player.name}</CardTitle>
+          {player.team && <Badge variant="secondary" className="mt-1">{player.team}</Badge>}
+          {player.house && <div className="text-xs mt-1 text-muted-foreground">🏠 House: {player.house.charAt(0).toUpperCase() + player.house.slice(1)}</div>}
+        </CardHeader>
 
   <CardContent className="text-center space-y-3">
     {player.position && (
