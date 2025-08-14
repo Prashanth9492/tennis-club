@@ -5,6 +5,9 @@ import { Link } from 'react-router-dom';
 import aakash from "@/assets/aakash.png";
 import srkr from "@/assets/srkrec-logo.png";
 import agni from "@/assets/agni.jpg";
+import prudhvi from "@/assets/prudhvi.jpg";
+import vayu from "@/assets/vayu.jpg";
+import jal from "@/assets/jal.jpg";
 
 
 export function HeroSection() {
@@ -70,12 +73,12 @@ export function HeroSection() {
                 <div className="space-y-2">
                 <div className="flex justify-center items-center gap-4 text-3xl flex-wrap">
                   <img src={aakash} alt="Aaksh House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
-                  <img src={aakash} alt="Prudhvi House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
-                  <img src={agni} alt="Vayu House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
-                  <img src={aakash} alt="Jal House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
+                  <img src={prudhvi} alt="Prudhvi House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
+                  <img src={vayu} alt="Vayu House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
+                  <img src={jal} alt="Jal House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
                   <img src={agni} alt="Agni House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
                 </div>
-                <div className="flex justify-center items-center text-white/70 mt-2 gap-3 flex-wrap">
+                <div className="flex justify-center items-center text-white/70 mt-2 gap-9 flex-wrap">
                   <span>Aaksh</span>
                   <span>Prudhvi</span>
                   <span>Vayu</span>
