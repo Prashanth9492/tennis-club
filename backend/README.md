@@ -6,8 +6,8 @@
    ```
 npm install
    ```
-2. Create a `.env` file (already provided) and set your MongoDB URI if needed.
-3. Start MongoDB locally (default URI is `mongodb://localhost:27017/housescricket`).
+2. Create a `.env` file (already provided) and set your MongoDB Atlas URI.
+3. The backend is configured to use MongoDB Atlas cloud database.
 4. Start the backend server:
    ```
 npm run dev
