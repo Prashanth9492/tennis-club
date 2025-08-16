@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trophy, Users, ArrowLeft, Flame, Cloud, Wind, Waves, Mountain } from "lucide-react";
+import { Trophy, Users, ArrowLeft, Flame, Cloud, Wind, Waves, Mountain, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
@@ -34,7 +34,7 @@ const teams = [
 const generateAllTeams = () => {
   const captainsA = ["P.PRASANTH", "R.KUMAR", "S.REDDY", "A.SHARMA", "V.KRISHNA"];
   const captainsB = ["K.KIRAN", "M.RAVI", "D.MOHAN", "N.SURESH", "T.VENKAT"];
-  const homeGrounds = ["B-HUB", "SPORTS COMPLEX", "MAIN GROUND", "PRACTICE FIELD", "CENTER COURT"];
+  const Grounds = ["B-HUB", "B-HUB", "B-HUB", "B-HUB", "B-HUB"];
   
   const allTeams = [];
   
@@ -44,14 +44,17 @@ const generateAllTeams = () => {
       name: `${houseTeam.name} TEAM-A`,
       icon: houseTeam.icon,
       captain: captainsA[index],
-      home_ground: homeGrounds[index],
+      home_ground: Grounds[index],
       description: `${houseTeam.name} TEAM-A specializes in aggressive gameplay and strategic plays.`,
       wins: houseTeam.wins + 2,
       teamType: "A",
       houseTeam: houseTeam.name,
       ranking: index + 3,
       speciality: "Power Play",
-     
+      pastMatches: [
+        { opponent: "VAYU TEAM-B", result: "Won", score: "145/6 vs 132/8", date: "15 Aug 2023" },
+        { opponent: "JAL TEAM-A", result: "Lost", score: "120/10 vs 125/7", date: "10 Aug 2023" }
+      ]
     };
 
     const teamB = {
@@ -59,13 +62,17 @@ const generateAllTeams = () => {
       name: `${houseTeam.name} TEAM-B`,
       icon: houseTeam.icon,
       captain: captainsB[index],
-      home_ground: homeGrounds[(index + 2) % homeGrounds.length],
+      home_ground: Grounds[(index + 2) % Grounds.length],
       description: `${houseTeam.name} TEAM-B focuses on tactical gameplay and team coordination.`,
       wins: houseTeam.wins + 4,
       teamType: "B",
       houseTeam: houseTeam.name,
       ranking: index + 1,
       speciality: "Strategic Play",
+      pastMatches: [
+        { opponent: "AGNI TEAM-A", result: "Lost", score: "110/8 vs 115/5", date: "14 Aug 2023" },
+        { opponent: "AAKASH TEAM-B", result: "Won", score: "130/7 vs 125/9", date: "8 Aug 2023" }
+      ]
     };
 
     allTeams.push(teamA, teamB);
@@ -97,6 +104,7 @@ const detailsVariants = {
 
 export default function Teams() {
   const [selectedTeam, setSelectedTeam] = useState(null);
+  const [expandedHouse, setExpandedHouse] = useState(null);
   const [imageErrors, setImageErrors] = useState({});
   const allTeams = generateAllTeams();
 
@@ -106,6 +114,10 @@ export default function Teams() {
 
   const hideDetails = () => {
     setSelectedTeam(null);
+  };
+
+  const toggleHouse = (houseName) => {
+    setExpandedHouse(expandedHouse === houseName ? null : houseName);
   };
 
   const handleImageError = (teamName) => {
@@ -137,9 +149,82 @@ export default function Teams() {
     );
   };
 
+  const HouseCard = ({ house }) => {
+    const IconComponent = teamIcons[house.name] || Trophy;
+    const logoUrl = teamLogos[house.name];
+    const isExpanded = expandedHouse === house.name;
+    
+    return (
+      <motion.div variants={cardVariants} initial="hidden" animate="visible">
+        <Card className="border border-gray-200 bg-white hover:shadow-md transition-shadow duration-200">
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center overflow-hidden">
+                  {!imageErrors[house.name] && logoUrl ? (
+                    <img
+                      src={logoUrl}
+                      alt={`${house.name} logo`}
+                      className="w-full h-full object-cover"
+                      onError={() => handleImageError(house.name)}
+                    />
+                  ) : (
+                    <IconComponent className="h-6 w-6 text-gray-600" />
+                  )}
+                </div>
+                <div>
+                  <CardTitle className="text-lg font-semibold text-gray-900">
+                    {house.name} HOUSE
+                  </CardTitle>
+                  <p className="text-sm text-gray-600">{house.description}</p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => toggleHouse(house.name)}
+                className="flex items-center gap-1"
+              >
+                {isExpanded ? (
+                  <>
+                    <ChevronUp className="h-4 w-4" />
+                    Hide Teams
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="h-4 w-4" />
+                    View Teams
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardHeader>
+
+          <AnimatePresence>
+            {isExpanded && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <CardContent className="pt-0 space-y-6">
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <TeamCard team={allTeams.find(t => t.id === `${house.id}_A`)} />
+                    <TeamCard team={allTeams.find(t => t.id === `${house.id}_B`)} />
+                  </div>
+                </CardContent>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Card>
+      </motion.div>
+    );
+  };
+
   const TeamCard = ({ team }) => {
     return (
-      <motion.div variants={cardVariants} initial="hidden" animate="visible" whileHover="hover">
+      <motion.div variants={cardVariants} whileHover="hover">
         <Card className="border border-gray-200 bg-white hover:shadow-md transition-shadow duration-200">
           <CardHeader className="text-center pb-4">
             <div className="flex justify-center mb-3">
@@ -193,26 +278,6 @@ export default function Teams() {
               <div className="text-2xl font-bold text-gray-900">{team.wins}</div>
             </div>
 
-            {team.pastMatches && (
-              <div>
-                <div className="text-xs text-gray-500 mb-2 font-medium">Recent Matches</div>
-                <div className="space-y-2">
-                  {team.pastMatches.slice(0, 2).map((match, idx) => (
-                    <div key={idx} className="p-2 border border-gray-100 rounded text-xs">
-                      <div className="font-medium">
-                        vs {match.opponent} - 
-                        <span className={`ml-1 ${match.result === 'Won' ? 'text-green-600' : 'text-red-600'}`}>
-                          {match.result}
-                        </span>
-                      </div>
-                      <div className="text-gray-500">{match.score}</div>
-                      <div className="text-gray-400">{match.date}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
             <div className="flex justify-center space-x-3 pt-2">
               <Button
                 variant="outline"
@@ -240,13 +305,6 @@ export default function Teams() {
     );
   };
 
-  const groupedTeams = teams.reduce((acc, houseTeam) => {
-    const teamA = allTeams.find(t => t.id === `${houseTeam.id}_A`);
-    const teamB = allTeams.find(t => t.id === `${houseTeam.id}_B`);
-    acc[houseTeam.name] = { teamA, teamB };
-    return acc;
-  }, {});
-
   return (
     <div className="min-h-screen bg-gray-50">
       <AnimatePresence>
@@ -270,25 +328,9 @@ export default function Teams() {
               </Badge>
             </div>
 
-            <div className="space-y-8">
-              {Object.entries(groupedTeams).map(([houseName, { teamA, teamB }]) => (
-                <div key={houseName} className="space-y-4">
-                  <div className="text-center">
-                    <h2 className="text-xl font-semibold text-gray-800 flex items-center justify-center gap-2">
-                      {(() => {
-                        const IconComponent = teamIcons[houseName] || Trophy;
-                        return <IconComponent className="h-5 w-5 text-gray-600" />;
-                      })()}
-                      {houseName} HOUSE
-                    </h2>
-                    <div className="w-16 h-0.5 bg-gray-300 mx-auto mt-2"></div>
-                  </div>
-                  
-                  <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto">
-                    <TeamCard team={teamA} />
-                    <TeamCard team={teamB} />
-                  </div>
-                </div>
+            <div className="space-y-4">
+              {teams.map((house) => (
+                <HouseCard key={house.id} house={house} />
               ))}
             </div>
           </motion.div>
