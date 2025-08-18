@@ -99,15 +99,7 @@ const Gallery: React.FC = () => {
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300">
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="rounded-full w-10 h-10 p-0"
-                    onClick={() => handleLike(item._id)}
-                    aria-label="Like"
-                  >
-                    <Heart className="h-4 w-4" />
-                  </Button>
+                 
                   {item.imageUrl && (
                     <>
                       <Button

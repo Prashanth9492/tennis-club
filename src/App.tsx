@@ -20,6 +20,7 @@ import Admin from "./pages/Admin";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import FirebaseLogin from "./pages/FirebaseLogin";
+import TestAPI from "./pages/TestAPI";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/points-table" element={<PointsTable />} />
               <Route path="/news" element={<News />} />
               <Route path="/gallery" element={<Gallery />} />
+              <Route path="/test-api" element={<TestAPI />} />
               <Route path="/admindashboard" element={<Admin />} />
               <Route path="/firebase-login" element={<FirebaseLogin />} />
 
