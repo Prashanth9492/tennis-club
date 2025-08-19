@@ -822,11 +822,21 @@ export default function Admin() {
                             <SelectValue placeholder="Select Team 1" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="agni">Agni</SelectItem>
-                            <SelectItem value="vayu">Vayu</SelectItem>
-                            <SelectItem value="aakash">Aakash</SelectItem>
-                            <SelectItem value="prudhvi">Prudhvi</SelectItem>
-                            <SelectItem value="jal">Jal</SelectItem>
+                            
+                            <SelectItem value="agni-a">Agni A</SelectItem>
+                            <SelectItem value="agni-b">Agni B</SelectItem>
+                        
+                            <SelectItem value="vayu-a">Vayu A</SelectItem>
+                            <SelectItem value="vayu-b">Vayu B</SelectItem>
+                           
+                            <SelectItem value="aakash-a">Aakash A</SelectItem>
+                            <SelectItem value="aakash-b">Aakash B</SelectItem>
+                            
+                            <SelectItem value="prudhvi-a">Prudhvi A</SelectItem>
+                            <SelectItem value="prudhvi-b">Prudhvi B</SelectItem>
+                         
+                            <SelectItem value="jal-a">Jal A</SelectItem>
+                            <SelectItem value="jal-b">Jal B</SelectItem>
                           </SelectContent>
                         </Select>
                         
@@ -843,11 +853,20 @@ export default function Admin() {
                           </SelectTrigger>
                           <SelectContent>
                           {/* 5 teams only */}
-                          <SelectItem value="agni">Agni</SelectItem>
-                          <SelectItem value="vayu">Vayu</SelectItem>
-                          <SelectItem value="aakash">Aakash</SelectItem>
-                          <SelectItem value="prudhvi">Prudhvi</SelectItem>
-                          <SelectItem value="jal">Jal</SelectItem>
+  <SelectItem value="agni-a">Agni A</SelectItem>
+                            <SelectItem value="agni-b">Agni B</SelectItem>
+                        
+                            <SelectItem value="vayu-a">Vayu A</SelectItem>
+                            <SelectItem value="vayu-b">Vayu B</SelectItem>
+                           
+                            <SelectItem value="aakash-a">Aakash A</SelectItem>
+                            <SelectItem value="aakash-b">Aakash B</SelectItem>
+                            
+                            <SelectItem value="prudhvi-a">Prudhvi A</SelectItem>
+                            <SelectItem value="prudhvi-b">Prudhvi B</SelectItem>
+                         
+                            <SelectItem value="jal-a">Jal A</SelectItem>
+                            <SelectItem value="jal-b">Jal B</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
