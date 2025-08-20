@@ -213,7 +213,7 @@ import jal from "@/assets/jal.jpg";
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Cricket Teams</h1>
+              <h1 className="text-3xl font-bold text-foreground">Teams</h1>
               <p className="text-muted-foreground mt-2">
                 Meet the 5 elemental teams competing in the championship
               </p>

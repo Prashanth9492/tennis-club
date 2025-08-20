@@ -3,6 +3,11 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Clock, MapPin, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
+import agni from "@/assets/agni.jpg";
+import prudhvi from "@/assets/prudhvi.jpg";
+import vayu from "@/assets/vayu.jpg";
+import jal from "@/assets/jal.jpg";
+import aakash from "@/assets/aakash.png";
 
 interface Match {
   _id: string;
@@ -12,6 +17,8 @@ interface Match {
   venue: string;
   type: string;
   status: string;
+  team1Logo: string;
+  team2Logo: string;
 }
 
 const Fixtures = () => {
@@ -34,6 +41,10 @@ const Fixtures = () => {
     fetchMatches();
   }, []);
 
+  useEffect(() => {
+    console.log("Matches data:", matches);
+  }, [matches]);
+
   // Animation variants
   const container = {
     hidden: { opacity: 0 },
@@ -50,23 +61,41 @@ const Fixtures = () => {
     show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
   };
 
+  const getTeamLogo = (teamName: string) => {
+    const normalizedTeamName = teamName.toLowerCase().replace(/-.*$/, "");
+    switch (normalizedTeamName) {
+      case "agni":
+        return agni;
+      case "prudhvi":
+        return prudhvi;
+      case "vayu":
+        return vayu;
+      case "jal":
+        return jal;
+      case "aakash":
+        return aakash;
+      default:
+        return "";
+    }
+  };
+
   return (
     <div className="bg-white min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-center text-black mb-8">
-           Matches
+          Matches
         </h1>
         
         {loading ? (
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="flex flex-col gap-6"
             variants={container}
             initial="hidden"
             animate="show"
           >
             {[...Array(6)].map((_, i) => (
               <motion.div key={i} variants={item}>
-                <Skeleton className="h-48 w-full rounded-lg" />
+                <Skeleton className="h-32 w-full rounded-lg" />
               </motion.div>
             ))}
           </motion.div>
@@ -81,7 +110,7 @@ const Fixtures = () => {
           </motion.p>
         ) : (
           <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="flex flex-col gap-6"
             variants={container}
             initial="hidden"
             animate="show"
@@ -97,6 +126,11 @@ const Fixtures = () => {
                   <CardContent>
                     <div className="flex justify-between items-center mb-6">
                       <div className="text-center flex-1">
+                        <img
+                          src={getTeamLogo(match.team1)}
+                          alt={`${match.team1} logo`}
+                          className="w-12 h-12 mx-auto mb-2 rounded-full object-cover"
+                        />
                         <div className="font-bold text-lg text-black">
                           {match.team1}
                         </div>
@@ -109,6 +143,11 @@ const Fixtures = () => {
                       </div>
                       
                       <div className="text-center flex-1">
+                        <img
+                          src={getTeamLogo(match.team2)}
+                          alt={`${match.team2} logo`}
+                          className="w-12 h-12 mx-auto mb-2 rounded-full object-cover"
+                        />
                         <div className="font-bold text-lg text-black">
                           {match.team2}
                         </div>
