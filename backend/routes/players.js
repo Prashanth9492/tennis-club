@@ -19,9 +19,9 @@ router.get('/', async (req, res) => {
 // POST create player
 router.post('/', upload.single('photo'), async (req, res) => {
   try {
-    const { name, age, house, position, team, battingStyle, bowlingStyle, description } = req.body;
+    const { name, age, house, position, team, battingStyle, bowlingStyle, description, pinno } = req.body;
     const photoUrl = req.file ? `/uploads/${req.file.filename}` : '';
-    const player = new Player({ name, age, house, position, team, battingStyle, bowlingStyle, description, photoUrl });
+    const player = new Player({ name, age, house, position, team, battingStyle, bowlingStyle, description, photoUrl, pinno });
     await player.save();
     res.status(201).json(player);
   } catch (err) {

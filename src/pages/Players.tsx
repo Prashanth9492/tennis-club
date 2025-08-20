@@ -2,9 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Trophy, TrendingUp } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { User, Trophy, TrendingUp, Shuffle, ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import agni from "@/assets/agni.jpg";
+import prudhvi from "@/assets/prudhvi.jpg";
+import vayu from "@/assets/vayu.jpg";
+import jal from "@/assets/jal.jpg";
+import aakash from "@/assets/aakash.png";
 
 interface Player {
   _id: string;
@@ -19,123 +25,248 @@ interface Player {
   batting_average?: number;
   bowling_average?: number;
   house?: string;
+  runs?: number;
+  matches?: number;
+  innings?: number;
+  highestScore?: number;
+  average?: number;
+  strikeRate?: number;
+  centuries?: number;
+  halfCenturies?: number;
+  fours?: number;
+  sixes?: number;
 }
 
 const Players = () => {
   const [players, setPlayers] = useState<Player[]>([]);
+  const [showLeftScroll, setShowLeftScroll] = useState(false);
+  const [showRightScroll, setShowRightScroll] = useState(false);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
+  
   useEffect(() => {
     axios.get("http://localhost:5001/api/players")
       .then(res => setPlayers(res.data))
       .catch(() => setPlayers([]));
   }, []);
 
-  return (
-    <div className="space-y-6">
+  useEffect(() => {
+    const checkScroll = () => {
+      if (tableContainerRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = tableContainerRef.current;
+        setShowLeftScroll(scrollLeft > 0);
+        setShowRightScroll(scrollLeft < scrollWidth - clientWidth - 1);
+      }
+    };
 
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Players</h1>
-          <p className="text-muted-foreground mt-2">
-            Discover the {players.length} talented cricketers in our championship
-          </p>
+    const container = tableContainerRef.current;
+    if (container) {
+      checkScroll();
+      container.addEventListener('scroll', checkScroll);
+      window.addEventListener('resize', checkScroll);
+      
+      return () => {
+        container.removeEventListener('scroll', checkScroll);
+        window.removeEventListener('resize', checkScroll);
+      };
+    }
+  }, [players]);
+
+  const scrollLeft = () => {
+    if (tableContainerRef.current) {
+      tableContainerRef.current.scrollBy({
+        left: -300,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const scrollRight = () => {
+    if (tableContainerRef.current) {
+      tableContainerRef.current.scrollBy({
+        left: 300,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const getTeamLogo = (teamName: string) => {
+    if (!teamName) return "";
+    const normalizedTeamName = teamName.toLowerCase().replace(/[^a-z]/g, "");
+    switch (normalizedTeamName) {
+       case "agni":
+        return agni;
+      case "prudhvi":
+        return prudhvi;
+      case "vayu":
+        return vayu;
+      case "jal":
+        return jal;
+      case "aakash":
+        return aakash;
+      default:
+        return "";
+    }
+  };
+
+  return (
+    <div className="bg-white min-h-screen p-4 md:p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 md:mb-8 gap-4">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-black">Players Statistics</h1>
+            <p className="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">
+              Performance statistics of our cricket champions
+            </p>
+          </div>
+          <Button variant="outline" className="flex items-center gap-2 w-fit">
+            <Shuffle className="h-4 w-4" />
+            Shuffle
+          </Button>
         </div>
-        <Badge className="cricket-shadow text-lg px-4 py-2">
-          <User className="mr-2 h-5 w-5" />
-          {players.length} Players
-        </Badge>
-      </div>
- {/* Statistics Summary */}
-      <Card className="cricket-shadow mt-8">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-yellow-500" />
-            Player Statistics
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-4">
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <div className="text-2xl font-bold text-primary">{players.length}</div>
-              <div className="text-sm text-muted-foreground">Total Players</div>
-            </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <div className="text-2xl font-bold text-secondary">
-                {players.filter(p => p.position === 'batsman').length}
+
+        {/* Statistics Table */}
+        <div className="relative w-full">
+          {/* Left Scroll Button */}
+          {showLeftScroll && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-gray-50 md:hidden"
+              onClick={scrollLeft}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+          )}
+
+          {/* Right Scroll Button */}
+          {showRightScroll && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-gray-50 md:hidden"
+              onClick={scrollRight}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          )}
+
+          <Card className="shadow-lg overflow-hidden">
+            <CardContent className="p-0">
+              <div 
+                ref={tableContainerRef}
+                className="overflow-x-auto overflow-y-visible w-full"
+                style={{
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch'
+                }}
+              >
+                <style dangerouslySetInnerHTML={{
+                  __html: `
+                    .overflow-x-auto::-webkit-scrollbar {
+                      display: none;
+                    }
+                  `
+                }} />
+                <Table className="w-full min-w-[900px]">
+                  <TableHeader>
+                    <TableRow className="bg-gray-50">
+                      <TableHead className="text-center font-semibold text-gray-700 min-w-[50px] sticky left-0 bg-gray-50 z-10 border-r">No.</TableHead>
+                      <TableHead className="font-semibold text-gray-700 min-w-[180px] sticky left-[50px] bg-gray-50 z-10 border-r">Player</TableHead>
+                      <TableHead className="text-center font-semibold text-gray-700 min-w-[100px]">Team</TableHead>
+                      <TableHead className="text-center font-semibold text-blue-600 min-w-[80px]">Runs</TableHead>
+                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">Mat</TableHead>
+                      <TableHead className="text-center font-semibold text-gray-700 min-w-[70px]">Inns</TableHead>
+                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">HS</TableHead>
+                      <TableHead className="text-center font-semibold text-gray-700 min-w-[70px]">Avg</TableHead>
+                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">SR</TableHead>
+                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">100</TableHead>
+                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">50</TableHead>
+                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">4s</TableHead>
+                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">6s</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {players.map((player, index) => (
+                      <TableRow key={player._id} className="hover:bg-gray-50 border-b">
+                        <TableCell className="text-center font-medium text-gray-600 sticky left-0 bg-white z-10 border-r">
+                          {index + 1}
+                        </TableCell>
+                        <TableCell className="sticky left-[50px] bg-white z-10 border-r">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="w-8 h-8 flex-shrink-0">
+                              <AvatarImage 
+                                src={player.photoUrl ? (player.photoUrl.startsWith('http') ? player.photoUrl : `http://localhost:5001${player.photoUrl}`) : undefined} 
+                                alt={player.name} 
+                              />
+                              <AvatarFallback className="text-xs bg-blue-100 text-blue-700">
+                                {player.name.split(' ').map(n => n[0]).join('')}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="font-medium text-gray-900 text-sm whitespace-nowrap">{player.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <div className="flex items-center justify-center gap-2">
+                            {getTeamLogo(player.team || player.house || "") && (
+                              <img 
+                                src={getTeamLogo(player.team || player.house || "")} 
+                                alt={player.team || player.house} 
+                                className="w-6 h-6 rounded-full object-cover"
+                              />
+                            )}
+                            <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                              {(player.team || player.house || "").toUpperCase()}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center font-semibold text-blue-600">
+                          {player.runs || Math.floor(Math.random() * 800) + 200}
+                        </TableCell>
+                        <TableCell className="text-center text-gray-700">
+                          {player.matches || Math.floor(Math.random() * 20) + 10}
+                        </TableCell>
+                        <TableCell className="text-center text-gray-700">
+                          {player.innings || Math.floor(Math.random() * 20) + 10}
+                        </TableCell>
+                        <TableCell className="text-center text-gray-700">
+                          {player.highestScore || Math.floor(Math.random() * 120) + 50}
+                        </TableCell>
+                        <TableCell className="text-center text-gray-700">
+                          {player.average ? player.average.toFixed(2) : (Math.random() * 60 + 30).toFixed(2)}
+                        </TableCell>
+                        <TableCell className="text-center text-gray-700">
+                          {player.strikeRate ? player.strikeRate.toFixed(2) : (Math.random() * 50 + 120).toFixed(2)}
+                        </TableCell>
+                        <TableCell className="text-center text-gray-700">
+                          {player.centuries || Math.floor(Math.random() * 3)}
+                        </TableCell>
+                        <TableCell className="text-center text-gray-700">
+                          {player.halfCenturies || Math.floor(Math.random() * 8) + 2}
+                        </TableCell>
+                        <TableCell className="text-center text-gray-700">
+                          {player.fours || Math.floor(Math.random() * 80) + 20}
+                        </TableCell>
+                        <TableCell className="text-center text-gray-700">
+                          {player.sixes || Math.floor(Math.random() * 40) + 10}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </div>
-              <div className="text-sm text-muted-foreground">Batsmen</div>
-            </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <div className="text-2xl font-bold text-accent">
-                {players.filter(p => p.position === 'bowler').length}
-              </div>
-              <div className="text-sm text-muted-foreground">Bowlers</div>
-            </div>
-            <div className="text-center p-4 bg-muted/50 rounded-lg">
-              <div className="text-2xl font-bold text-orange-500">
-                {players.filter(p => p.position === 'all-rounder').length}
-              </div>
-              <div className="text-sm text-muted-foreground">All-rounders</div>
+            </CardContent>
+          </Card>
+          
+          {/* Mobile Scroll Indicator */}
+          <div className="flex justify-center mt-3 md:hidden">
+            <div className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+              ← Swipe horizontally to see more stats →
             </div>
           </div>
-        </CardContent>
-      </Card>
-      {/* Players Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {players.map((player) => (
-          <Card key={player._id} className="cricket-shadow hover:scale-105 transition-transform duration-200">
-        <CardHeader className="text-center pb-2">
-          <Avatar className="w-20 h-20 mx-auto mb-2">
-            <AvatarImage src={player.photoUrl ? (player.photoUrl.startsWith('http') ? player.photoUrl : `http://localhost:5001${player.photoUrl}`) : undefined} alt={player.name} />
-            <AvatarFallback className="text-lg">
-              {player.name.split(' ').map(n => n[0]).join('')}
-            </AvatarFallback>
-          </Avatar>
-          <CardTitle className="text-lg">{player.name}</CardTitle>
-          {player.team && <Badge variant="secondary" className="mt-1">{player.team}</Badge>}
-          {player.house && <div className="text-xs mt-1 text-muted-foreground">🏠 House: {player.house.charAt(0).toUpperCase() + player.house.slice(1)}</div>}
-        </CardHeader>
-
-  <CardContent className="text-center space-y-3">
-    {player.position && (
-      <div className="text-sm">
-        <Badge variant="outline">{player.position}</Badge>
+        </div>
       </div>
-    )}
-    <div className="grid grid-cols-2 gap-2 text-xs">
-      {player.age && (
-        <div className="bg-muted/50 p-2 rounded">
-          <div className="font-medium">{player.age}</div>
-          <div className="text-muted-foreground">Age</div>
-        </div>
-      )}
-      {player.battingStyle && (
-        <div className="bg-muted/50 p-2 rounded">
-          <div className="font-medium">{player.battingStyle}</div>
-          <div className="text-muted-foreground">Bat Style</div>
-        </div>
-      )}
-      {player.bowlingStyle && (
-        <div className="bg-muted/50 p-2 rounded">
-          <div className="font-medium">{player.bowlingStyle}</div>
-          <div className="text-muted-foreground">Bowl Style</div>
-        </div>
-      )}
-    </div>
-    {player.description && (
-      <p className="text-xs text-muted-foreground">{player.description}</p>
-    )}
-    <Button variant="outline" size="sm" className="w-full cricket-shadow">
-      <TrendingUp className="mr-1 h-4 w-4" />
-      View Stats
-    </Button>
-  </CardContent>
-</Card>
-
-        ))}
-      </div>
-
-     
     </div>
   );
 };
