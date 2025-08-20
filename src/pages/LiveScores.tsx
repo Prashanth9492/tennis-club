@@ -63,6 +63,10 @@ const LiveScores = () => {
     currentOver: "2",
     inningsBreak: "= 2",
     partnership: "3 (7)",
+    showWinLose: false, // New field to control win/lose display
+    matchCompleted: false, // New field to track if match is fully completed
+    showBattingIndicators: true, // New field to control BAT/WAIT indicators
+    showBallStatus: true, // New field to control current ball status display
     batsmen: [
       { name: "Arpit Rana", runs: 2, balls: 7, strikeRate: 28.6, isOnStrike: true, isOut: false },
       { name: "Sujal Singh", runs: 0, balls: 0, strikeRate: 0, isOnStrike: false, isOut: false }
@@ -120,7 +124,11 @@ const LiveScores = () => {
     teamB: { ...initialMatchData.teamB, runs: 142, wickets: 3, overs: 18.2 },
     innings: 2,
     target: 184,
-    status: "live"
+    status: "live",
+    showWinLose: false,
+    matchCompleted: false,
+    showBattingIndicators: true,
+    showBallStatus: true
   });
 
   // Update form data when match data changes
@@ -838,6 +846,71 @@ const LiveScores = () => {
                   />
                 </div>
                 <div>
+                  <label className="block text-gray-300 text-sm mb-1">Current Innings</label>
+                  <select
+                    name="innings"
+                    value={String(formData.innings)}
+                    onChange={handleInputChange}
+                    className="w-full p-1 bg-gray-600 text-white rounded text-sm"
+                  >
+                    <option value="1">1st Innings (Team A Batting)</option>
+                    <option value="2">2nd Innings (Team B Batting)</option>
+                  </select>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="matchCompleted"
+                    checked={formData.matchCompleted}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      matchCompleted: e.target.checked
+                    })}
+                    className="mr-2"
+                  />
+                  <label className="text-gray-300 text-sm">Match Completed (Both teams played 20 overs)</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="showWinLose"
+                    checked={formData.showWinLose}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      showWinLose: e.target.checked
+                    })}
+                    className="mr-2"
+                  />
+                  <label className="text-gray-300 text-sm">Show Win/Lose Indicators</label>
+                </div>
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="showBattingIndicators"
+                    checked={formData.showBattingIndicators}
+                    onChange={(e) => setFormData({
+                      ...formData,
+                      showBattingIndicators: e.target.checked
+                    })}
+                    className="mr-2"
+                  />
+                  <label className="text-gray-300 text-sm">Show Batting Indicators (BAT/WAIT)</label>
+                </div>
+
+                {/* Show Ball Status Control */}
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={formData.showBallStatus}
+                    onChange={(e) => setFormData(prev => ({
+                      ...prev,
+                      showBallStatus: e.target.checked
+                    }))}
+                    className="mr-2"
+                  />
+                  <label className="text-gray-300 text-sm">Show Current Ball Status (6, 4, Wicket, etc.)</label>
+                </div>
+                <div>
                   <label className="block text-gray-300 text-sm mb-1">Toss</label>
                   <input
                     type="text"
@@ -901,17 +974,16 @@ const LiveScores = () => {
         // Display Scoreboard - Ultra-Compact Mobile-First
         <div className="w-full max-w-5xl mx-auto p-1 space-y-1">
           
-          {/* Team Scores - Compact Mobile Grid */}
+          {/* Team Scores - Compact Mobile Grid with Win/Lose Indicator */}
           <div className="bg-gray-800 rounded-lg overflow-hidden shadow-lg">
             {/* Team A - Ultra Mobile Optimized */}
-            <div className="grid grid-cols-[40px_1fr_60px] sm:grid-cols-[50px_1fr_80px] gap-1 sm:gap-2 p-1.5 sm:p-2 border-b border-gray-700 items-center">
+            <div className="grid grid-cols-[40px_1fr_80px] sm:grid-cols-[50px_1fr_100px] gap-1 sm:gap-2 p-1.5 sm:p-2 border-b border-gray-700 items-center">
               {/* Logo - Fixed Size */}
               <img 
                 src={matchData.teamA.logo} 
                 alt={matchData.teamA.name}
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
               />
-              
               {/* Team Info - Minimal Flexbox */}
               <div className="flex flex-col min-w-0">
                 <div className="font-medium text-xs sm:text-sm text-gray-300 truncate">
@@ -929,26 +1001,39 @@ const LiveScores = () => {
                   </div>
                 </div>
               </div>
-              
-              {/* Status - Compact */}
-              <div className="text-xs font-medium text-gray-400 text-right">
-                {matchData.innings === 1 ? (
-                  <div className="bg-green-600 text-white px-1 py-0.5 rounded text-xs">BAT</div>
-                ) : (
-                  <div className="text-gray-500">DONE</div>
+              {/* Status & Win/Lose - Compact */}
+              <div className="text-xs font-medium text-gray-400 text-right flex flex-col items-end">
+                {/* Batting Indicator - Only show when enabled and not completed */}
+                {matchData.showBattingIndicators && !matchData.matchCompleted && (
+                  <>
+                    {matchData.innings === 1 ? (
+                      <div className="bg-green-600 text-white px-1 py-0.5 rounded text-xs mb-1">BAT</div>
+                    ) : (
+                      <div className="text-gray-500 mb-1">DONE</div>
+                    )}
+                  </>
+                )}
+                {/* Win/Lose indicator for Team A */}
+                {(matchData.showWinLose && matchData.matchCompleted) && (
+                  <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                    (firstInningData.teamA?.runs || matchData.target || 0) > (matchData.teamB.runs || 0)
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-red-500 text-white'
+                  }`}>
+                    {(firstInningData.teamA?.runs || matchData.target || 0) > (matchData.teamB.runs || 0) ? 'WIN' : 'LOSE'}
+                  </span>
                 )}
               </div>
             </div>
 
             {/* Team B - Ultra Mobile Optimized */}
-            <div className="grid grid-cols-[40px_1fr_60px] sm:grid-cols-[50px_1fr_80px] gap-1 sm:gap-2 p-1.5 sm:p-2 items-center">
+            <div className="grid grid-cols-[40px_1fr_80px] sm:grid-cols-[50px_1fr_100px] gap-1 sm:gap-2 p-1.5 sm:p-2 items-center">
               {/* Logo - Fixed Size */}
               <img 
                 src={matchData.teamB.logo} 
                 alt={matchData.teamB.name}
                 className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover"
               />
-              
               {/* Team Info - Minimal Flexbox */}
               <div className="flex flex-col min-w-0">
                 <div className="font-medium text-xs sm:text-sm text-gray-300 truncate">
@@ -966,17 +1051,76 @@ const LiveScores = () => {
                   </div>
                 </div>
               </div>
-              
-              {/* Status - Compact */}
-              <div className="text-xs font-medium text-gray-400 text-right">
-                {matchData.innings === 2 ? (
-                  <div className="bg-green-600 text-white px-1 py-0.5 rounded text-xs">BAT</div>
-                ) : (
-                  <div className="text-gray-500">WAIT</div>
+              {/* Status & Win/Lose - Compact */}
+              <div className="text-xs font-medium text-gray-400 text-right flex flex-col items-end">
+                {/* Batting Indicator - Only show when enabled and not completed */}
+                {matchData.showBattingIndicators && !matchData.matchCompleted && (
+                  <>
+                    {matchData.innings === 2 ? (
+                      <div className="bg-green-600 text-white px-1 py-0.5 rounded text-xs mb-1">BAT</div>
+                    ) : (
+                      <div className="text-gray-500 mb-1">WAIT</div>
+                    )}
+                  </>
+                )}
+                {/* Win/Lose indicator for Team B */}
+                {(matchData.showWinLose && matchData.matchCompleted) && (
+                  <span className={`px-2 py-0.5 rounded text-xs font-bold ${
+                    (matchData.teamB.runs || 0) > (firstInningData.teamA?.runs || matchData.target || 0)
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-red-500 text-white'
+                  }`}>
+                    {(matchData.teamB.runs || 0) > (firstInningData.teamA?.runs || matchData.target || 0) ? 'WIN' : 'LOSE'}
+                  </span>
                 )}
               </div>
             </div>
           </div>
+
+          {/* Current Ball Status - Beside Scoreboard with Dark Theme */}
+          {matchData.showBallStatus && matchData.status === "live" && matchData.ballByBall && matchData.ballByBall.length > 0 && (
+            <div className="bg-gray-800 rounded-lg p-3 sm:p-4 shadow-lg border border-gray-700">
+              <div className="text-center">
+                <div className="text-white font-bold text-lg sm:text-xl mb-2">
+                  {(() => {
+                    const lastBall = matchData.ballByBall[matchData.ballByBall.length - 1];
+                    if (!lastBall) return "LIVE BALL";
+                    
+                    if (lastBall.extras === "W") {
+                      return "🏏 WICKET!";
+                    } else if (lastBall.extras === "WD") {
+                      return "WIDE BALL";
+                    } else if (lastBall.extras === "NB") {
+                      return "NO BALL";
+                    } else if (lastBall.runs === 6) {
+                      return "🚀 SIX!";
+                    } else if (lastBall.runs === 4) {
+                      return "🔥 FOUR!";
+                    } else if (lastBall.runs === 0) {
+                      return "⚫ DOT BALL";
+                    } else {
+                      return `${lastBall.runs} RUN${lastBall.runs > 1 ? 'S' : ''}`;
+                    }
+                  })()}
+                </div>
+                <div className="text-gray-300 text-xs sm:text-sm">
+                  {(() => {
+                    const lastBall = matchData.ballByBall[matchData.ballByBall.length - 1];
+                    if (!lastBall) return "Match in Progress";
+                    
+                    if (lastBall.extras === "W") {
+                      if (lastBall.wicketType) {
+                        return `${lastBall.wicketType.toUpperCase()}`;
+                      }
+                      return "WICKET FALLEN";
+                    } else {
+                      return `Over ${lastBall.over}.${lastBall.ball} • ${lastBall.batsman}`;
+                    }
+                  })()}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Match Stats - Ultra-Compact Mobile Grid */}
           <div className="bg-gray-700 rounded-lg p-1.5">
@@ -1011,12 +1155,12 @@ const LiveScores = () => {
                 <span className="w-2 h-2 bg-orange-500 rounded-full mr-2 animate-pulse"></span>
                 Live - Over {Math.ceil(matchData.ballByBall.length / 6) || 1}
               </span>
-              <span className="text-xs text-orange-300 animate-bounce">← Scroll for overs</span>
+              <span className="text-xs text-gray-400 animate-bounce">← Scroll for overs</span>
             </h3>
             
             {/* Ball-by-Ball - Mobile Responsive Card */}
             <div className="flex justify-center px-2 sm:px-0">
-              <div className="bg-gradient-to-br from-orange-500 via-orange-600 to-red-600 rounded-xl p-2 sm:p-4 w-full max-w-[340px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[480px] overflow-x-auto shadow-lg border border-orange-400/30">
+              <div className="bg-gray-800 rounded-xl p-2 sm:p-4 w-full max-w-[340px] sm:max-w-[380px] md:max-w-[420px] lg:max-w-[480px] overflow-x-auto shadow-lg border border-gray-700">
                 {/* Horizontal Scroll Container - Mobile Responsive */}
                 <div className="flex space-x-4 sm:space-x-6 md:space-x-8 min-w-max justify-end">
                   {/* Previous Overs - Mobile Responsive Layout */}
@@ -1029,11 +1173,11 @@ const LiveScores = () => {
                   ).slice(0, -1).map(([overNum, balls]) => (
                     <div key={overNum} className="flex-shrink-0 opacity-70 w-[240px] sm:w-[280px] md:w-[300px]">
                       {/* Previous Over Header - Mobile Responsive */}
-                      <div className="text-center mb-2 sm:mb-3 md:mb-4 pb-1.5 sm:pb-2 border-b-2 border-orange-200/30">
-                        <div className="text-sm sm:text-base text-orange-100 font-bold tracking-wide">
+                      <div className="text-center mb-2 sm:mb-3 md:mb-4 pb-1.5 sm:pb-2 border-b-2 border-gray-600">
+                        <div className="text-sm sm:text-base text-gray-300 font-bold tracking-wide">
                           🏏 OVER {overNum}
                         </div>
-                        <div className="text-base sm:text-lg md:text-xl font-black text-white bg-white/10 rounded-full px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 mt-1 sm:mt-2 inline-block shadow-md">
+                        <div className="text-base sm:text-lg md:text-xl font-black text-white bg-gray-700 rounded-full px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 mt-1 sm:mt-2 inline-block shadow-md">
                           {balls.reduce((sum, ball) => sum + (ball.runs || 0), 0)} RUNS
                         </div>
                       </div>
@@ -1072,9 +1216,9 @@ const LiveScores = () => {
                                 )}
                               </div>
                               {/* Mobile Responsive Ball Details */}
-                              <div className="text-xs text-orange-100 font-medium hidden sm:block">
+                              <div className="text-xs text-gray-300 font-medium hidden sm:block">
                                 {ball && ball.runs !== undefined && !ball.extras && (
-                                  <div className="bg-white/15 rounded-full px-1 sm:px-1.5 py-0.5 shadow-sm text-xs">
+                                  <div className="bg-gray-700 rounded-full px-1 sm:px-1.5 py-0.5 shadow-sm text-xs">
                                     {ball.runs}r
                                   </div>
                                 )}
@@ -1090,21 +1234,21 @@ const LiveScores = () => {
                       </div>
                       
                       {/* Mobile Responsive Previous Over Summary */}
-                      <div className="text-xs sm:text-sm text-orange-100 text-center pt-1 sm:pt-2 border-t-2 border-orange-200/30 mt-1 sm:mt-2 bg-white/5 rounded-lg p-1 sm:p-2 shadow-md">
+                      <div className="text-xs sm:text-sm text-gray-300 text-center pt-1 sm:pt-2 border-t-2 border-gray-600 mt-1 sm:mt-2 bg-gray-700 rounded-lg p-1 sm:p-2 shadow-md">
                         <div className="flex justify-center items-center space-x-1 sm:space-x-2 font-medium flex-wrap text-xs">
-                          <span className="bg-white/15 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm">
+                          <span className="bg-gray-600 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm">
                             {balls.length}/6
                           </span>
-                          <span className="bg-red-500/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm">
+                          <span className="bg-red-500/40 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm">
                             {balls.filter(b => b.extras === "W").length}W
                           </span>
                           {balls.filter(b => b.runs === 4).length > 0 && (
-                            <span className="bg-blue-500/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm">
+                            <span className="bg-blue-500/40 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm">
                               {balls.filter(b => b.runs === 4).length}×4
                             </span>
                           )}
                           {balls.filter(b => b.runs === 6).length > 0 && (
-                            <span className="bg-orange-500/30 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm">
+                            <span className="bg-orange-500/40 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm">
                               {balls.filter(b => b.runs === 6).length}×6
                             </span>
                           )}
@@ -1116,11 +1260,11 @@ const LiveScores = () => {
                   {/* Current Over - Mobile Responsive Main Focus */}
                   <div className="flex-shrink-0 w-[240px] sm:w-[280px] md:w-[300px]">
                     {/* Current Over Header - Mobile Responsive */}
-                    <div className="text-center mb-2 sm:mb-3 md:mb-4 pb-1.5 sm:pb-2 border-b-2 border-orange-200/40">
-                      <div className="text-sm sm:text-base text-orange-100 font-bold tracking-wide">
+                    <div className="text-center mb-2 sm:mb-3 md:mb-4 pb-1.5 sm:pb-2 border-b-2 border-gray-600">
+                      <div className="text-sm sm:text-base text-gray-300 font-bold tracking-wide">
                         🏏 CURRENT OVER
                       </div>
-                      <div className="text-base sm:text-lg md:text-xl font-black text-white bg-white/15 rounded-full px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 mt-1 sm:mt-2 inline-block shadow-lg">
+                      <div className="text-base sm:text-lg md:text-xl font-black text-white bg-gray-700 rounded-full px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 mt-1 sm:mt-2 inline-block shadow-lg">
                         {matchData.ballByBall.slice(-6).reduce((sum, ball) => sum + (ball.runs || 0), 0)} RUNS
                       </div>
                     </div>
@@ -1160,7 +1304,7 @@ const LiveScores = () => {
                               )}
                             </div>
                             {/* Mobile Responsive Ball Details */}
-                            <div className="text-xs text-orange-100 font-medium hidden sm:block">
+                            <div className="text-xs text-gray-300 font-medium hidden sm:block">
                               {ball && ball.runs !== undefined && !ball.extras && (
                                 <div className="bg-white/20 rounded-full px-1 sm:px-1.5 py-0.5 shadow-sm text-xs">
                                   {ball.runs}r
@@ -1178,9 +1322,9 @@ const LiveScores = () => {
                     </div>
                     
                     {/* Mobile Responsive Current Over Summary */}
-                    <div className="text-xs sm:text-sm text-orange-100 text-center pt-1 sm:pt-2 border-t-2 border-orange-200/40 mt-1 sm:mt-2 bg-white/10 rounded-lg p-1 sm:p-2 shadow-lg">
+                    <div className="text-xs sm:text-sm text-gray-300 text-center pt-1 sm:pt-2 border-t-2 border-gray-600 mt-1 sm:mt-2 bg-gray-700 rounded-lg p-1 sm:p-2 shadow-lg">
                       <div className="flex justify-center items-center space-x-1 sm:space-x-2 font-medium flex-wrap text-xs">
-                        <span className="bg-white/20 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm">
+                        <span className="bg-gray-600 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm">
                           {matchData.ballByBall.slice(-6).length}/6
                         </span>
                         <span className="bg-red-500/40 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-sm">
