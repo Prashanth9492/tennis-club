@@ -80,12 +80,11 @@ const Fixtures = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen p-6">
+    <div className="bg-background min-h-screen text-gray-900 dark:bg-gray-900 dark:text-gray-100">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-center text-black mb-8">
+        <h1 className="text-3xl font-bold text-center text-black dark:text-gray-100 mb-8">
           Matches
         </h1>
-        
         {loading ? (
           <motion.div
             className="flex flex-col gap-6"
@@ -101,7 +100,7 @@ const Fixtures = () => {
           </motion.div>
         ) : matches.length === 0 ? (
           <motion.p 
-            className="text-center text-xl text-gray-500 py-12"
+            className="text-center text-xl text-gray-500 dark:text-gray-300 py-12"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -117,10 +116,10 @@ const Fixtures = () => {
           >
             {matches.map((match) => (
               <motion.div key={match._id} variants={item}>
-                <Card className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-all">
+                <Card className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all">
                   <CardHeader className="pb-4">
-                    <div className="text-center text-sm font-medium text-gray-500">
-                      {match.type} • {match.status}
+                    <div className="text-center text-sm font-medium text-gray-500 dark:text-gray-300">
+                      {match.type}  {match.status}
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -131,36 +130,33 @@ const Fixtures = () => {
                           alt={`${match.team1} logo`}
                           className="w-12 h-12 mx-auto mb-2 rounded-full object-cover"
                         />
-                        <div className="font-bold text-lg text-black">
+                        <div className="font-bold text-lg text-black dark:text-gray-100">
                           {match.team1}
                         </div>
                       </div>
-                      
                       <div className="mx-4">
-                        <div className="bg-gray-100 text-black font-bold rounded-full w-10 h-10 flex items-center justify-center">
+                        <div className="bg-gray-100 dark:bg-gray-900 text-black dark:text-gray-100 font-bold rounded-full w-10 h-10 flex items-center justify-center">
                           VS
                         </div>
                       </div>
-                      
                       <div className="text-center flex-1">
                         <img
                           src={getTeamLogo(match.team2)}
                           alt={`${match.team2} logo`}
                           className="w-12 h-12 mx-auto mb-2 rounded-full object-cover"
                         />
-                        <div className="font-bold text-lg text-black">
+                        <div className="font-bold text-lg text-black dark:text-gray-100">
                           {match.team2}
                         </div>
                       </div>
                     </div>
-                    
-                    <div className="space-y-3 border-t border-gray-100 pt-4">
-                      <div className="flex items-center gap-3 text-gray-700">
-                        <Clock className="w-4 h-4 text-gray-500" />
+                    <div className="space-y-3 border-t border-gray-100 dark:border-gray-700 pt-4">
+                      <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                        <Clock className="w-4 h-4 text-gray-500 dark:text-gray-300" />
                         <span className="text-sm">{new Date(match.date).toLocaleString()}</span>
                       </div>
-                      <div className="flex items-center gap-3 text-gray-700">
-                        <MapPin className="w-4 h-4 text-gray-500" />
+                      <div className="flex items-center gap-3 text-gray-700 dark:text-gray-300">
+                        <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-300" />
                         <span className="text-sm">{match.venue}</span>
                       </div>
                     </div>

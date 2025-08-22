@@ -116,13 +116,13 @@ export default function Statistics() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="space-y-6"
+      className="bg-background min-h-screen text-gray-900 dark:bg-gray-900 dark:text-gray-100 space-y-6"
     >
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Statistics</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-3xl font-bold text-foreground dark:text-gray-100">Statistics</h1>
+          <p className="text-muted-foreground mt-2 dark:text-gray-300">
             Comprehensive cricket analytics and performance metrics
           </p>
         </div>
@@ -140,19 +140,19 @@ export default function Statistics() {
         transition={{ delay: 0.1 }}
         className="grid gap-4 md:grid-cols-4"
       >
-        <Card className="text-center p-6 cricket-shadow hover-scale">
+  <Card className="text-center p-6 cricket-shadow hover-scale bg-white dark:bg-gray-800">
           <div className="text-3xl font-bold text-primary">{totalRuns.toLocaleString()}</div>
           <div className="text-sm text-muted-foreground">Total Runs Scored</div>
         </Card>
-        <Card className="text-center p-6 cricket-shadow hover-scale">
+  <Card className="text-center p-6 cricket-shadow hover-scale bg-white dark:bg-gray-800">
           <div className="text-3xl font-bold text-destructive">{totalWickets}</div>
           <div className="text-sm text-muted-foreground">Total Wickets Taken</div>
         </Card>
-        <Card className="text-center p-6 cricket-shadow hover-scale">
+  <Card className="text-center p-6 cricket-shadow hover-scale bg-white dark:bg-gray-800">
           <div className="text-3xl font-bold text-secondary">{totalMatches}</div>
           <div className="text-sm text-muted-foreground">Matches Played</div>
         </Card>
-        <Card className="text-center p-6 cricket-shadow hover-scale">
+  <Card className="text-center p-6 cricket-shadow hover-scale bg-white dark:bg-gray-800">
           <div className="text-3xl font-bold text-accent">{displayPlayers.length}</div>
           <div className="text-sm text-muted-foreground">Active Players</div>
         </Card>
@@ -173,7 +173,7 @@ export default function Statistics() {
           </TabsList>
 
           <TabsContent value="batting" className="space-y-4">
-            <Card className="cricket-shadow">
+            <Card className="cricket-shadow bg-white dark:bg-gray-800">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="h-5 w-5" />
@@ -211,7 +211,7 @@ export default function Statistics() {
           </TabsContent>
 
           <TabsContent value="bowling" className="space-y-4">
-            <Card className="cricket-shadow">
+            <Card className="cricket-shadow bg-white dark:bg-gray-800">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5" />
@@ -249,7 +249,7 @@ export default function Statistics() {
           </TabsContent>
 
           <TabsContent value="experience" className="space-y-4">
-            <Card className="cricket-shadow">
+            <Card className="cricket-shadow bg-white dark:bg-gray-800">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Star className="h-5 w-5" />
@@ -287,7 +287,7 @@ export default function Statistics() {
           </TabsContent>
 
           <TabsContent value="teams" className="space-y-4">
-            <Card className="cricket-shadow">
+            <Card className="cricket-shadow bg-white dark:bg-gray-800">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Users className="h-5 w-5" />

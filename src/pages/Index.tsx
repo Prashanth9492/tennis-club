@@ -6,14 +6,14 @@ import { Zap, Calendar, Trophy, TrendingUp, Users, Star } from "lucide-react";
 
 const Index = () => {
   return (
-    <div className="space-y-8">
-      <HeroSection />
-      
-      {/* Quick Stats Dashboard */}
-      
+    <div className="bg-background min-h-screen text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+      <div className="space-y-8">
+        <HeroSection />
 
-      {/* Featured Sections */}
-      
+        {/* Quick Stats Dashboard */}
+
+        {/* Featured Sections */}
+      </div>
     </div>
   );
 };

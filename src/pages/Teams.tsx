@@ -1,4 +1,4 @@
-  import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
   import { Badge } from "@/components/ui/badge";
   import { Button } from "@/components/ui/button";
   import { Trophy, Users, Star, TrendingUp, ArrowLeft, Calendar, Clock, MapPin } from "lucide-react";
@@ -207,7 +207,8 @@ import jal from "@/assets/jal.jpg";
     }
 
     return (
-    <div className="relative min-h-screen">
+    <div className="bg-background min-h-screen text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+        <div className="relative min-h-screen">
         {/* Main Teams Grid */}
         <div className={`space-y-6 p-6 ${selectedTeam ? "hidden" : "block"}`}>
           {/* Header */}
@@ -233,10 +234,10 @@ import jal from "@/assets/jal.jpg";
                 {loading ? "Refreshing..." : "Refresh Matches"}
               </Button>
               
-              <Badge className="shadow-lg text-lg px-4 py-2 bg-primary text-primary-foreground">
+               {/* <Badge className="shadow-lg text-lg px-4 py-2 bg-primary text-primary-foreground">
                 <Trophy className="mr-2 h-5 w-5" />
                 5 Teams
-              </Badge>
+              </Badge> */}
             </div>
           </div>
 
@@ -611,5 +612,6 @@ import jal from "@/assets/jal.jpg";
         )}
         
       </div>
-    );
-  }
+    </div>
+  );
+}

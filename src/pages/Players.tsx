@@ -109,160 +109,162 @@ const Players = () => {
   };
 
   return (
-    <div className="bg-white min-h-screen p-4 md:p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 md:mb-8 gap-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-black">Players Statistics</h1>
-            <p className="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">
-              Performance statistics of our cricket champions
-            </p>
+    <div className="bg-background min-h-screen text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+      <div className="bg-white dark:bg-gray-900 min-h-screen p-4 md:p-6">
+        <div className="max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 md:mb-8 gap-4">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-black dark:text-gray-100">Players Statistics</h1>
+              <p className="text-gray-600 dark:text-gray-300 mt-1 md:mt-2 text-sm md:text-base">
+                Performance statistics of our cricket champions
+              </p>
+            </div>
+            <Button variant="outline" className="flex items-center gap-2 w-fit">
+              <Shuffle className="h-4 w-4" />
+              Shuffle
+            </Button>
           </div>
-          <Button variant="outline" className="flex items-center gap-2 w-fit">
-            <Shuffle className="h-4 w-4" />
-            Shuffle
-          </Button>
-        </div>
 
-        {/* Statistics Table */}
-        <div className="relative w-full">
-          {/* Left Scroll Button */}
-          {showLeftScroll && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-gray-50 md:hidden"
-              onClick={scrollLeft}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          )}
-
-          {/* Right Scroll Button */}
-          {showRightScroll && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-gray-50 md:hidden"
-              onClick={scrollRight}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          )}
-
-          <Card className="shadow-lg overflow-hidden">
-            <CardContent className="p-0">
-              <div 
-                ref={tableContainerRef}
-                className="overflow-x-auto overflow-y-visible w-full"
-                style={{
-                  scrollbarWidth: 'none',
-                  msOverflowStyle: 'none',
-                  WebkitOverflowScrolling: 'touch'
-                }}
+          {/* Statistics Table */}
+          <div className="relative w-full">
+            {/* Left Scroll Button */}
+            {showLeftScroll && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-gray-50 md:hidden"
+                onClick={scrollLeft}
               >
-                <style dangerouslySetInnerHTML={{
-                  __html: `
-                    .overflow-x-auto::-webkit-scrollbar {
-                      display: none;
-                    }
-                  `
-                }} />
-                <Table className="w-full min-w-[900px]">
-                  <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead className="text-center font-semibold text-gray-700 min-w-[50px] sticky left-0 bg-gray-50 z-10 border-r">No.</TableHead>
-                      <TableHead className="font-semibold text-gray-700 min-w-[180px] sticky left-[50px] bg-gray-50 z-10 border-r">Player</TableHead>
-                      <TableHead className="text-center font-semibold text-gray-700 min-w-[100px]">Team</TableHead>
-                      <TableHead className="text-center font-semibold text-blue-600 min-w-[80px]">Runs</TableHead>
-                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">Mat</TableHead>
-                      <TableHead className="text-center font-semibold text-gray-700 min-w-[70px]">Inns</TableHead>
-                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">HS</TableHead>
-                      <TableHead className="text-center font-semibold text-gray-700 min-w-[70px]">Avg</TableHead>
-                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">SR</TableHead>
-                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">100</TableHead>
-                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">50</TableHead>
-                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">4s</TableHead>
-                      <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">6s</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {players.map((player, index) => (
-                      <TableRow key={player._id} className="hover:bg-gray-50 border-b">
-                        <TableCell className="text-center font-medium text-gray-600 sticky left-0 bg-white z-10 border-r">
-                          {index + 1}
-                        </TableCell>
-                        <TableCell className="sticky left-[50px] bg-white z-10 border-r">
-                          <div className="flex items-center gap-3">
-                            <Avatar className="w-8 h-8 flex-shrink-0">
-                              <AvatarImage 
-                                src={player.photoUrl ? (player.photoUrl.startsWith('http') ? player.photoUrl : `http://localhost:5001${player.photoUrl}`) : undefined} 
-                                alt={player.name} 
-                              />
-                              <AvatarFallback className="text-xs bg-blue-100 text-blue-700">
-                                {player.name.split(' ').map(n => n[0]).join('')}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="font-medium text-gray-900 text-sm whitespace-nowrap">{player.name}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center">
-                          <div className="flex items-center justify-center gap-2">
-                            {getTeamLogo(player.team || player.house || "") && (
-                              <img 
-                                src={getTeamLogo(player.team || player.house || "")} 
-                                alt={player.team || player.house} 
-                                className="w-6 h-6 rounded-full object-cover"
-                              />
-                            )}
-                            <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
-                              {(player.team || player.house || "").toUpperCase()}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-center font-semibold text-blue-600">
-                          {player.runs || Math.floor(Math.random() * 800) + 200}
-                        </TableCell>
-                        <TableCell className="text-center text-gray-700">
-                          {player.matches || Math.floor(Math.random() * 20) + 10}
-                        </TableCell>
-                        <TableCell className="text-center text-gray-700">
-                          {player.innings || Math.floor(Math.random() * 20) + 10}
-                        </TableCell>
-                        <TableCell className="text-center text-gray-700">
-                          {player.highestScore || Math.floor(Math.random() * 120) + 50}
-                        </TableCell>
-                        <TableCell className="text-center text-gray-700">
-                          {player.average ? player.average.toFixed(2) : (Math.random() * 60 + 30).toFixed(2)}
-                        </TableCell>
-                        <TableCell className="text-center text-gray-700">
-                          {player.strikeRate ? player.strikeRate.toFixed(2) : (Math.random() * 50 + 120).toFixed(2)}
-                        </TableCell>
-                        <TableCell className="text-center text-gray-700">
-                          {player.centuries || Math.floor(Math.random() * 3)}
-                        </TableCell>
-                        <TableCell className="text-center text-gray-700">
-                          {player.halfCenturies || Math.floor(Math.random() * 8) + 2}
-                        </TableCell>
-                        <TableCell className="text-center text-gray-700">
-                          {player.fours || Math.floor(Math.random() * 80) + 20}
-                        </TableCell>
-                        <TableCell className="text-center text-gray-700">
-                          {player.sixes || Math.floor(Math.random() * 40) + 10}
-                        </TableCell>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            )}
+
+            {/* Right Scroll Button */}
+            {showRightScroll && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-gray-50 md:hidden"
+                onClick={scrollRight}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            )}
+
+            <Card className="shadow-lg overflow-hidden bg-white dark:bg-gray-800">
+              <CardContent className="p-0">
+                <div 
+                  ref={tableContainerRef}
+                  className="overflow-x-auto overflow-y-visible w-full"
+                  style={{
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none',
+                    WebkitOverflowScrolling: 'touch'
+                  }}
+                >
+                  <style dangerouslySetInnerHTML={{
+                    __html: `
+                      .overflow-x-auto::-webkit-scrollbar {
+                        display: none;
+                      }
+                    `
+                  }} />
+                  <Table className="w-full min-w-[900px] bg-white dark:bg-gray-900">
+                    <TableHeader>
+                      <TableRow className="bg-gray-50 dark:bg-gray-800">
+                        <TableHead className="text-center font-semibold text-gray-700 dark:text-gray-200 min-w-[50px] sticky left-0 bg-gray-50 dark:bg-gray-800 z-10 border-r">No.</TableHead>
+                        <TableHead className="font-semibold text-gray-700 dark:text-gray-200 min-w-[180px] sticky left-[50px] bg-gray-50 dark:bg-gray-800 z-10 border-r">Player</TableHead>
+                        <TableHead className="text-center font-semibold text-gray-700 min-w-[100px]">Team</TableHead>
+                        <TableHead className="text-center font-semibold text-blue-600 min-w-[80px]">Runs</TableHead>
+                        <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">Mat</TableHead>
+                        <TableHead className="text-center font-semibold text-gray-700 min-w-[70px]">Inns</TableHead>
+                        <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">HS</TableHead>
+                        <TableHead className="text-center font-semibold text-gray-700 min-w-[70px]">Avg</TableHead>
+                        <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">SR</TableHead>
+                        <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">100</TableHead>
+                        <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">50</TableHead>
+                        <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">4s</TableHead>
+                        <TableHead className="text-center font-semibold text-gray-700 min-w-[60px]">6s</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {players.map((player, index) => (
+                        <TableRow key={player._id} className="hover:bg-gray-50 border-b">
+                          <TableCell className="text-center font-medium text-gray-600 sticky left-0 bg-white z-10 border-r">
+                            {index + 1}
+                          </TableCell>
+                          <TableCell className="sticky left-[50px] bg-white z-10 border-r">
+                            <div className="flex items-center gap-3">
+                              <Avatar className="w-8 h-8 flex-shrink-0">
+                                <AvatarImage 
+                                  src={player.photoUrl ? (player.photoUrl.startsWith('http') ? player.photoUrl : `http://localhost:5001${player.photoUrl}`) : undefined} 
+                                  alt={player.name} 
+                                />
+                                <AvatarFallback className="text-xs bg-blue-100 text-blue-700">
+                                  {player.name.split(' ').map(n => n[0]).join('')}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="font-medium text-gray-900 dark:text-gray-100 text-sm whitespace-nowrap">{player.name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center">
+                            <div className="flex items-center justify-center gap-2">
+                              {getTeamLogo(player.team || player.house || "") && (
+                                <img 
+                                  src={getTeamLogo(player.team || player.house || "")} 
+                                  alt={player.team || player.house} 
+                                  className="w-6 h-6 rounded-full object-cover"
+                                />
+                              )}
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap">
+                                {(player.team || player.house || "").toUpperCase()}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center font-semibold text-blue-600 dark:text-blue-400">
+                            {player.runs || Math.floor(Math.random() * 800) + 200}
+                          </TableCell>
+                          <TableCell className="text-center text-gray-700 dark:text-gray-200">
+                            {player.matches || Math.floor(Math.random() * 20) + 10}
+                          </TableCell>
+                          <TableCell className="text-center text-gray-700">
+                            {player.innings || Math.floor(Math.random() * 20) + 10}
+                          </TableCell>
+                          <TableCell className="text-center text-gray-700">
+                            {player.highestScore || Math.floor(Math.random() * 120) + 50}
+                          </TableCell>
+                          <TableCell className="text-center text-gray-700">
+                            {player.average ? player.average.toFixed(2) : (Math.random() * 60 + 30).toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-center text-gray-700">
+                            {player.strikeRate ? player.strikeRate.toFixed(2) : (Math.random() * 50 + 120).toFixed(2)}
+                          </TableCell>
+                          <TableCell className="text-center text-gray-700">
+                            {player.centuries || Math.floor(Math.random() * 3)}
+                          </TableCell>
+                          <TableCell className="text-center text-gray-700">
+                            {player.halfCenturies || Math.floor(Math.random() * 8) + 2}
+                          </TableCell>
+                          <TableCell className="text-center text-gray-700">
+                            {player.fours || Math.floor(Math.random() * 80) + 20}
+                          </TableCell>
+                          <TableCell className="text-center text-gray-700">
+                            {player.sixes || Math.floor(Math.random() * 40) + 10}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Mobile Scroll Indicator */}
+            <div className="flex justify-center mt-3 md:hidden">
+              <div className="text-xs text-gray-500 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full transition-colors duration-300">
+                ← Swipe horizontally to see more stats →
               </div>
-            </CardContent>
-          </Card>
-          
-          {/* Mobile Scroll Indicator */}
-          <div className="flex justify-center mt-3 md:hidden">
-            <div className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-              ← Swipe horizontally to see more stats →
             </div>
           </div>
         </div>

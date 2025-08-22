@@ -111,169 +111,168 @@ export default function News() {
 
   return (
     <motion.div 
-      className="space-y-6"
+      className="space-y-6 bg-background min-h-screen text-gray-900 dark:bg-gray-900 dark:text-gray-100"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Header */}
-      <motion.div 
-        className="flex items-center justify-between"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Cricket News</h1>
-          <p className="text-muted-foreground mt-2">
-            Stay updated with the latest cricket news and updates
-          </p>
-        </div>
+        {/* Header */}
+        <motion.div 
+          className="flex items-center justify-between"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div>
+            <h1 className="text-3xl font-bold text-foreground dark:text-gray-100">Cricket News</h1>
+            <p className="text-muted-foreground mt-2 dark:text-gray-300">
+              Stay updated with the latest cricket news and updates
+            </p>
+          </div>
 
-        <Badge className="text-lg px-4 py-2 bg-primary hover:bg-primary/90 shadow-md">
-          <MessageSquare className="mr-2 h-5 w-5" />
-          {news.length} Articles
-        </Badge>
-      </motion.div>
+          <Badge className="text-lg px-4 py-2 bg-primary hover:bg-primary/90 shadow-md">
+            <MessageSquare className="mr-2 h-5 w-5" />
+            {news.length} Articles
+          </Badge>
+        </motion.div>
 
-      {/* Featured Article */}
-      <AnimatePresence>
-        {news.length > 0 && (
-          <motion.div
-            variants={featuredItem}
-            initial="hidden"
-            animate="show"
-          >
-            <Card className="shadow-lg hover:shadow-xl transition-shadow">
-              <div className="md:flex">
-                {news[0].image && (
-                  <motion.div 
-                    className="md:w-1/3 overflow-hidden"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                  >
-                    <img
-                      src={news[0].image}
-                      alt={news[0].title}
-                      className="w-full h-48 md:h-full object-cover rounded-l-lg hover:scale-105 transition-transform duration-500"
-                    />
-                  </motion.div>
-                )}
-                <div className={`p-6 ${news[0].image ? "md:w-2/3" : "w-full"}`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="destructive" className="animate-pulse">Featured</Badge>
-                    {news[0].category && (
-                      <Badge variant="outline">{news[0].category}</Badge>
-                    )}
-                  </div>
-                  <h2 className="text-2xl font-bold mb-3">{news[0].title}</h2>
-                  <p className="text-muted-foreground mb-4 line-clamp-3">
-                    {news[0].content.substring(0, 200)}...
-                  </p>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      {news[0].author && (
-                        <div className="flex items-center gap-1">
-                          <User className="h-4 w-4" />
-                          {news[0].author}
-                        </div>
+        {/* Featured Article */}
+        <AnimatePresence>
+          {news.length > 0 && (
+            <motion.div
+              variants={featuredItem}
+              initial="hidden"
+              animate="show"
+            >
+                <Card className="shadow-lg hover:shadow-xl transition-shadow bg-white dark:bg-gray-800">
+                <div className="md:flex">
+                  {news[0].image && (
+                    <motion.div 
+                      className="md:w-1/3 overflow-hidden"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                    >
+                      <img
+                        src={news[0].image}
+                        alt={news[0].title}
+                        className="w-full h-48 md:h-full object-cover rounded-l-lg hover:scale-105 transition-transform duration-500"
+                      />
+                    </motion.div>
+                  )}
+                  <div className={`p-6 ${news[0].image ? "md:w-2/3" : "w-full"}`}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="destructive" className="animate-pulse">Featured</Badge>
+                      {news[0].category && (
+                        <Badge variant="outline">{news[0].category}</Badge>
                       )}
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {formatDate(news[0].published_at || news[0].createdAt)}
+                    </div>
+                    <h2 className="text-2xl font-bold mb-3">{news[0].title}</h2>
+                    <p className="text-muted-foreground mb-4 line-clamp-3">
+                      {news[0].content.substring(0, 200)}...
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        {news[0].author && (
+                          <div className="flex items-center gap-1">
+                            <User className="h-4 w-4" />
+                            {news[0].author}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4" />
+                          {formatDate(news[0].published_at || news[0].createdAt)}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* News Grid */}
-      <motion.div
-        className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-        variants={container}
-        initial="hidden"
-        animate="show"
-      >
-        <AnimatePresence>
-          {news.slice(1, visibleArticles).map((article) => (
-            <motion.div 
-              key={article._id}
-              variants={item}
-              whileHover={{ scale: 1.03 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
-              <Card className="shadow-md hover:shadow-lg transition-all">
-                {article.image && (
-                  <div className="aspect-video overflow-hidden rounded-t-lg">
-                    <motion.img
-                      src={article.image}
-                      alt={article.title}
-                      className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5 }}
-                    />
-                  </div>
-                )}
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2 mb-2">
-                    {article.category && (
-                      <Badge variant="outline" className="text-xs">
-                        {article.category}
-                      </Badge>
-                    )}
-                  </div>
-                  <CardTitle className="text-lg line-clamp-2">{article.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <p className="text-sm text-muted-foreground line-clamp-3">
-                    {article.content.substring(0, 150)}...
-                  </p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <div className="flex items-center gap-4">
-                      {article.author && (
-                        <div className="flex items-center gap-1">
-                          <User className="h-3 w-3" />
-                          {article.author}
-                        </div>
-                      )}
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {formatDate(article.published_at || article.createdAt)}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
               </Card>
             </motion.div>
-          ))}
+          )}
         </AnimatePresence>
-      </motion.div>
 
-      {/* Load More */}
-      {news.length > visibleArticles && (
-        <motion.div 
-          className="text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+        {/* News Grid */}
+        <motion.div
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+          variants={container}
+          initial="hidden"
+          animate="show"
         >
-          <Button 
-            variant="outline" 
-            onClick={loadMore}
-            className="shadow-md hover:shadow-lg transition-shadow"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            Load More Articles
-          </Button>
+          <AnimatePresence>
+            {news.slice(1, visibleArticles).map((article) => (
+              <motion.div 
+                key={article._id}
+                variants={item}
+                whileHover={{ scale: 1.03 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+              >
+                <Card className="shadow-md hover:shadow-lg transition-all bg-white dark:bg-gray-800">
+                  {article.image && (
+                    <div className="aspect-video overflow-hidden rounded-t-lg">
+                      <motion.img
+                        src={article.image}
+                        alt={article.title}
+                        className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                      />
+                    </div>
+                  )}
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center gap-2 mb-2">
+                      {article.category && (
+                        <Badge variant="outline" className="text-xs">
+                          {article.category}
+                        </Badge>
+                      )}
+                    </div>
+                    <CardTitle className="text-lg line-clamp-2">{article.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground line-clamp-3">
+                      {article.content.substring(0, 150)}...
+                    </p>
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <div className="flex items-center gap-4">
+                        {article.author && (
+                          <div className="flex items-center gap-1">
+                            <User className="h-3 w-3" />
+                            {article.author}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          {formatDate(article.published_at || article.createdAt)}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </motion.div>
-      )}
+
+        {/* Load More */}
+        {news.length > visibleArticles && (
+          <motion.div 
+            className="text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Button 
+              variant="outline" 
+              onClick={loadMore}
+              className="shadow-md hover:shadow-lg transition-shadow"
+            >
+              Load More Articles
+            </Button>
+          </motion.div>
+        )}
+      {/* End of main content */}
     </motion.div>
   );
 }

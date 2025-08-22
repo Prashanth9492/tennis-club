@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,8 +18,6 @@ interface Team {
   season: string;
   ranking?: number;
 }
-
-
 
 export default function PointsTable() {
   const [pointsTable, setPointsTable] = useState<Team[]>([]);
@@ -110,7 +107,7 @@ export default function PointsTable() {
   }, {});
 
   return (
-    <motion.div>
+  <motion.div className="bg-background min-h-screen text-gray-900 dark:bg-gray-900 dark:text-gray-100">
       {Object.keys(groupedBySeason).length === 0 ? (
         <div className="text-center py-8">No points table data available.</div>
       ) : (
@@ -137,15 +134,15 @@ export default function PointsTable() {
                   .map((team: Team, index: number) => (
                   <tr
                     key={team._id || team.team}
-                    className={`${index + 1 <= 2 ? "bg-green-50 dark:bg-green-950/20" : ""} border-b`}
+                    className={`${index + 1 <= 2 ? "bg-green-50 dark:bg-green-950/20" : ""} border-b dark:border-gray-700`}
                   >
-                    <TableCell className="font-bold text-lg">{index + 1}</TableCell>
+                    <TableCell className="font-bold text-lg text-black dark:text-gray-100">{index + 1}</TableCell>
                     <TableCell>{getPositionIcon(index + 1, team.ranking)}</TableCell>
-                    <TableCell>
+                    <TableCell className="text-black dark:text-gray-100">
                       <div className="flex items-center gap-3">
                         <div className="text-2xl">🏏</div>
                         <div>
-                          <div className="font-semibold">{team.team}</div>
+                          <div className="font-semibold text-black dark:text-gray-100">{team.team}</div>
                           {getPositionBadge(index + 1)}
                         </div>
                       </div>

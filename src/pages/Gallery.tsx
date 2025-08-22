@@ -76,63 +76,65 @@ const Gallery: React.FC = () => {
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold text-center mb-6">Gallery</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {gallery.length === 0 && (
-          <div className="col-span-full text-center text-gray-500">No images found in the gallery.</div>
-        )}
-        {gallery.map((item) => (
-          <div key={item._id + item.imageUrl} className="relative group overflow-hidden rounded-lg shadow hover:shadow-lg transition">
-            {item.imageUrl ? (
-              <img
-                src={item.imageUrl.startsWith('http') ? item.imageUrl : `http://localhost:5001${item.imageUrl}`}
-                alt={item.title || 'Gallery Image'}
-                className="w-full h-60 object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            ) : (
-              <div className="w-full h-60 flex items-center justify-center bg-gray-200 text-gray-400">
-                No Image
-              </div>
-            )}
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300">
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <div className="flex gap-2">
+    <div className="bg-background min-h-screen text-gray-900 dark:bg-gray-900 dark:text-gray-100">
+      <div className="p-6">
+        <h1 className="text-3xl font-bold text-center mb-6 text-black dark:text-gray-100">Gallery</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {gallery.length === 0 && (
+            <div className="col-span-full text-center text-gray-500">No images found in the gallery.</div>
+          )}
+          {gallery.map((item) => (
+            <div key={item._id + item.imageUrl} className="relative group overflow-hidden rounded-lg shadow hover:shadow-lg transition bg-white dark:bg-gray-800">
+              {item.imageUrl ? (
+                <img
+                  src={item.imageUrl.startsWith('http') ? item.imageUrl : `http://localhost:5001${item.imageUrl}`}
+                  alt={item.title || 'Gallery Image'}
+                  className="w-full h-60 object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <div className="w-full h-60 flex items-center justify-center bg-gray-200 dark:bg-gray-900 text-gray-400 dark:text-gray-500">
+                  No Image
+                </div>
+              )}
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="flex gap-2">
                  
-                  {item.imageUrl && (
-                    <>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="rounded-full w-10 h-10 p-0"
-                        onClick={() => handleShare(item.imageUrl, item.title)}
-                        aria-label="Share"
-                      >
-                        <Share2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="rounded-full w-10 h-10 p-0"
-                        onClick={() => handleDownload(item.imageUrl, item.title)}
-                        aria-label="Download"
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
-                    </>
-                  )}
+                    {item.imageUrl && (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="rounded-full w-10 h-10 p-0"
+                          onClick={() => handleShare(item.imageUrl, item.title)}
+                          aria-label="Share"
+                        >
+                          <Share2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          className="rounded-full w-10 h-10 p-0"
+                          onClick={() => handleDownload(item.imageUrl, item.title)}
+                          aria-label="Download"
+                        >
+                          <Download className="h-4 w-4" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
+              {/* Title (Optional) */}
+              {item.title && (
+                <div className="absolute bottom-2 left-2 text-white dark:text-gray-100 text-sm font-medium drop-shadow">
+                  {item.title}
+                </div>
+              )}
             </div>
-            {/* Title (Optional) */}
-            {item.title && (
-              <div className="absolute bottom-2 left-2 text-white text-sm font-medium drop-shadow">
-                {item.title}
-              </div>
-            )}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
