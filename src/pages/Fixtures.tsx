@@ -36,7 +36,7 @@ const Fixtures = () => {
         const data = await res.json();
         setMatches(data);
       } catch (error) {
-        console.error("Failed to fetch matches:", error);
+       // console.error("Failed to fetch matches:", error);
       } finally {
         setLoading(false);
       }
@@ -45,7 +45,7 @@ const Fixtures = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Matches data:", matches);
+   // console.log("Matches data:", matches);
   }, [matches]);
 
   // Animation variants
