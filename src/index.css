@@ -187,3 +187,22 @@
     animation: hero-fade 1s ease-out;
   }
 }
+@keyframes dark-glow {
+  0% {
+    box-shadow: 0 0 10px rgba(0, 150, 255, 0.2),
+                0 0 20px rgba(0, 150, 255, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(0, 150, 255, 0.4),
+                0 0 50px rgba(0, 150, 255, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(0, 150, 255, 0.2),
+                0 0 20px rgba(0, 150, 255, 0.1);
+  }
+}
+
+.dark .animate-dark-glow {
+  animation: dark-glow 4s ease-in-out infinite;
+  border-radius: 9999px;
+}

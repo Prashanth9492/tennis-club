@@ -1,128 +1,169 @@
-import { Button } from "@/components/ui/button";
-import { Play, TrendingUp, Trophy } from "lucide-react";
-import cricketHero from "@/assets/cricket-hero.jpg";
-import { Link } from 'react-router-dom';
-import aakash from "@/assets/aakash.png";
-import srkr from "@/assets/srkrec-logo.png";
-import agni from "@/assets/agni.jpg";
-import prudhvi from "@/assets/prudhvi.jpg";
-import vayu from "@/assets/vayu.jpg";
-import jal from "@/assets/jal.jpg";
+import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { ArrowRight } from 'lucide-react';
+import cricks from "../assets/logos/Cricket.mp4";
+import crick from "../assets/logos/Cricket Reward.mp4";
 
+import JalImage from '../assets/logos/1.jpg';
+import AakashImage from '../assets/logos/5.jpg';
+import AgniImage from '../assets/logos/3.jpg';
+import VayuImage from '../assets/logos/2.jpg';
+import PrudhviImage from '../assets/logos/4.jpg';
+import SrkrLogo from '../assets/logos/srkrlogo.png';
+
+type ValidHouse = 'aakash' | 'agni' | 'vayu' | 'jal' | 'prudhvi';
+
+interface House {
+  name: ValidHouse;
+  imageSrc: string;
+}
+
+const houses: House[] = [
+  { name: 'aakash', imageSrc: AakashImage },
+  { name: 'agni', imageSrc: AgniImage },
+  { name: 'vayu', imageSrc: VayuImage },
+  { name: 'jal', imageSrc: JalImage },
+  { name: 'prudhvi', imageSrc: PrudhviImage },
+];
 
 export function HeroSection() {
+  const heroRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
+  const [circleSize, setCircleSize] = useState("w-[300px] h-[300px]");
+
+  const handleHouseClick = (house: ValidHouse) => {
+    navigate(`/house/${house}`);
+  };
+
+  useEffect(() => {
+    const updateCircleSize = () => {
+      if (window.innerWidth >= 1024) setCircleSize("w-[500px] h-[500px]");
+      else if (window.innerWidth >= 768) setCircleSize("w-[400px] h-[400px]");
+      else setCircleSize("w-[300px] h-[300px]");
+    };
+    updateCircleSize();
+    window.addEventListener("resize", updateCircleSize);
+    return () => window.removeEventListener("resize", updateCircleSize);
+  }, []);
+
   return (
-    <div className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src={cricketHero} 
-          alt="Cricket Stadium" 
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/50"></div>
-      </div>
+    <div className="flex flex-col lg:flex-row">
+      {/* Hero Section */}
+      <section
+        ref={heroRef}
+        className="mt-8 md:mt-16 lg:mt-24"
+        style={{
+          '--move-x': '0px',
+          '--move-y': '0px'
+        } as React.CSSProperties}
+      >
+        {/* Background blurred orbs */}
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <div className="absolute top-1/3 left-1/4 w-72 h-72 
+                          bg-house-aakash/20 rounded-full filter blur-3xl opacity-60 animate-float" />
+          <div className="absolute top-1/2 right-1/4 w-64 h-64 
+                          bg-house-agni/20 rounded-full filter blur-3xl opacity-60 animate-float" />
+          <div className="absolute bottom-1/4 right-1/3 w-80 h-80 
+                          bg-house-vayu/20 rounded-full filter blur-3xl opacity-60 animate-float" />
+        </div>
 
-      {/* Hero Content */}
-      <div className="relative z-10 text-center text-white max-w-6xl mx-auto px-4">
-        <div className="animate-hero-fade">
-          <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight"><span className="block text-secondary animate-cricket-bounce inline-block ml-4">
-              CSD-CSIT
-            </span></h1>
-          <h1 className="text-5xl lg:text-7xl font-bold mb-6 leading-tight">
-            
-            College Cricket Champions
-            <span className="block text-secondary animate-cricket-bounce inline-block ml-4">
-              
-            </span>
-          </h1>
-          
-          <p className="text-xl lg:text-2xl mb-8 text-white/90 max-w-3xl mx-auto">
-            Experience the thrill of college cricket with live scores, player statistics, 
-            team rankings, and comprehensive match coverage.
-          </p>
+        {/* Text Section */}
+        <div className="container relative z-10 mx-auto px-4 md:px-6 text-center lg:text-left">
+          <div className="max-w-3xl mx-auto lg:mx-0">
+            {/* Logo + Title */}
+            <div className="inline-block animate-fade-in">
+              <span className="flex items-center gap-2 text-foreground">
+                <img src={SrkrLogo} alt="SRKR Logo" className="h-10 w-auto" />
+                <span className="text-red-700 dark:text-red-400 font-bold text-lg md:text-xl">
+                  SRKREC
+                </span>
+                <span className="text-gray-800 dark:text-gray-200 font-bold text-sm md:text-base lg:text-lg">
+                  <span className="hidden md:inline">CSD & CSIT Department</span>
+                  <span className="md:hidden">CSD & CSIT Dept</span>
+                </span>
+              </span>
+            </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-            <Link to="/live-scores">
-              <Button size="lg" className="cricket-shadow hover:scale-105 smooth-transition bg-secondary text-secondary-foreground hover:bg-secondary/90">
-                <Play className="mr-2 h-5 w-5" />
-                Watch Live
-              </Button>
-            </Link>
-            <Link to="/teams">
-              <Button size="lg" className="cricket-shadow hover:scale-105 smooth-transition bg-secondary text-secondary-foreground hover:bg-secondary/90">
-                <TrendingUp className="mr-2 h-5 w-5" />
+            {/* Heading */}
+            <h1
+              className="mt-3 text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight 
+                         text-gray-900 dark:text-gray-100 animate-slide-up"
+              style={{ animationDelay: '100ms' }}
+            >
+              College <span className="text-house-aakash">Cricket</span>{" "}
+              <span className="text-house-aakash">Championship</span>
+            </h1>
+
+            {/* Buttons */}
+            <div
+              className="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 animate-slide-up"
+              style={{ animationDelay: '300ms' }}
+            >
+              <Link
+                to="/players"
+                className="inline-flex items-center justify-center rounded-md 
+                           bg-primary px-6 py-3 text-sm font-medium text-primary-foreground 
+                           shadow transition-colors hover:bg-primary/90"
+              >
+                Explore Players
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+
+              <Link
+                to="/teams"
+                className="inline-flex items-center justify-center rounded-md 
+                           bg-secondary px-6 py-3 text-sm font-medium text-secondary-foreground 
+                           shadow-sm transition-colors hover:bg-secondary/80"
+              >
                 View Teams
-              </Button>
-            </Link>
-          </div>
-
-          {/* Live Score Cards */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto animate-slide-up">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-secondary" />
-                  Houses
-                </h3>
-                <span className="bg-red-500 text-white px-2 py-1 rounded text-sm font-medium">
-                  5 Houses
-                </span>
-              </div>
-              
-                <div className="space-y-2">
-                <div className="flex justify-center items-center gap-4 text-3xl flex-wrap">
-                  <img src={aakash} alt="Aaksh House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
-                  <img src={prudhvi} alt="Prudhvi House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
-                  <img src={vayu} alt="Vayu House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
-                  <img src={jal} alt="Jal House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
-                  <img src={agni} alt="Agni House" className="w-14 h-14 object-contain rounded-full border-2 border-white shadow" />
-                </div>
-                <div className="flex justify-center items-center text-white/70 mt-2 gap-9 flex-wrap">
-                  <span>Aaksh</span>
-                  <span>Prudhvi</span>
-                  <span>Vayu</span>
-                  <span>Jal</span>
-                  <span>Agni</span>
-                </div>
-                </div>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 border border-white/20">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-secondary" />
-                  Display
-                </h3>
-                <span className="bg-green-500 text-white px-2 py-1 rounded text-sm font-medium">
-                  SHOWCASE
-                </span>
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex justify-center items-center text-2xl font-bold text-secondary">
-                  House Spirit On Display!
-                </div>                <div className="flex justify-center items-center text-white/70">
-                  <span>Cheer for your house and show your colors!</span>
-                </div>
-              </div>
+              </Link>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Animated Cricket Ball */}
-      <div className="absolute bottom-10 right-10 w-12 h-12 bg-red-600 rounded-full animate-cricket-bounce opacity-80 hidden lg:block shadow-lg">
-        <div className="w-full h-full rounded-full border-2 border-white relative overflow-hidden">
-          {/* Cricket ball seam */}
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-0.5 bg-white rounded-full"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-0.5 h-8 bg-white rounded-full"></div>
-          {/* Curved seam lines */}
-          <div className="absolute top-2 left-2 w-8 h-8 border border-white/50 rounded-full"></div>
-          <div className="absolute top-2 right-2 w-8 h-8 border border-white/50 rounded-full"></div>
-        </div>
-      </div>
+     {/* Video Section */}
+<section className="py-12 lg:py-16 lg:w-1/2 flex items-center justify-center">
+  <div className={`relative ${circleSize} flex items-center justify-center`}>
+    <div className="video-wrapper">
+      <video
+        src={crick}
+        autoPlay
+        loop
+        muted
+        playsInline
+      />
+    </div>
+  </div>
+
+  <style>
+    {`
+      .video-wrapper {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        overflow: hidden;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .video-wrapper video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      /* Force white parts to blend in dark mode */
+      .dark .video-wrapper {
+        background: radial-gradient(circle, rgba(0,0,0,0.9) 80%, transparent 100%);
+      }
+    `}
+  </style>
+</section>
+
+
     </div>
   );
 }
-

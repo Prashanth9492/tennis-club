@@ -14,7 +14,7 @@ const PlayerSchema = new mongoose.Schema({
   bowlingStyle: String,
   description: String,
   photoUrl: String,
-  pinno: { type: String, required: true, unique: true }
+  
 });
 
 export default mongoose.model('Player', PlayerSchema);

@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 const NAV_LINKS = [
   { name: "Home", path: "/" },
   { name: "Teams", path: "/teams" },
-  { name: "Live Scores", path: "/live-scores" },
+//  { name: "Live Scores", path: "/live-scores" },
   { name: "Players", path: "/players" },
   { name: "Fixtures", path: "/fixtures" },
   { name: "Points-table", path: "/points-table" },
@@ -49,14 +49,14 @@ export function Layout({ children }: LayoutProps) {
           </div>
           {/* Theme toggle button - positioned at the right corner */}
           <div className="flex items-center">
-            <Button
+            {/* <Button
               variant="outline"
               size="sm"
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               aria-label="Toggle dark mode"
             >
               {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
+            </Button> */}
           </div>
         </div>
         {/* Second row: Navigation links - centered on desktop */}
