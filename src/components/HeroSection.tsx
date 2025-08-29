@@ -65,7 +65,7 @@ export function HeroSection() {
                   <Trophy className="h-5 w-5 text-secondary" />
                   Houses
                 </h3>
-                <span className="bg-blue-500 text-white px-2 py-1 rounded text-sm font-medium">
+                <span className="bg-red-500 text-white px-2 py-1 rounded text-sm font-medium">
                   5 Houses
                 </span>
               </div>
@@ -112,7 +112,7 @@ export function HeroSection() {
       </div>
 
       {/* Animated Cricket Ball */}
-      <div className="absolute bottom-10 right-10 w-12 h-12 bg-blue-600 rounded-full animate-cricket-bounce opacity-80 hidden lg:block shadow-lg">
+      <div className="absolute bottom-10 right-10 w-12 h-12 bg-red-600 rounded-full animate-cricket-bounce opacity-80 hidden lg:block shadow-lg">
         <div className="w-full h-full rounded-full border-2 border-white relative overflow-hidden">
           {/* Cricket ball seam */}
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-0.5 bg-white rounded-full"></div>
