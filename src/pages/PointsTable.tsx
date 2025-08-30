@@ -185,7 +185,7 @@ export default function PointsTable() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
       >
-        <Card className="cricket-shadow">
+        {/* <Card className="cricket-shadow">
           <CardContent className="pt-6">
             <h3 className="font-semibold mb-4">Tournament Format</h3>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -216,7 +216,7 @@ export default function PointsTable() {
               </ul>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </motion.div>
     </motion.div>
   );
