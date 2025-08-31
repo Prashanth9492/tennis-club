@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 const NAV_LINKS = [
   { name: "Home", path: "/" },
   { name: "Teams", path: "/teams" },
-//  { name: "Live Scores", path: "/live-scores" },
+ { name: "Live Scores", path: "/live-scores" },
   { name: "Players", path: "/players" },
   { name: "Fixtures", path: "/fixtures" },
   { name: "Points-table", path: "/points-table" },

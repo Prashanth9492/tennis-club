@@ -39,6 +39,7 @@ import {
 // Remove useCollection, we'll use RTDB listeners below
 import { useToast } from "@/hooks/use-toast";
 import AdminPlayerDashboard from "@/components/admin/AdminPlayerDashboard";
+import LiveScoringAdmin from "@/components/admin/LiveScoringAdmin";
 
 interface DashboardStats {
   totalTeams: number;
@@ -520,10 +521,11 @@ export default function Admin() {
 
       <Tabs defaultValue="points-table" className="space-y-6">
 
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="points-table">Points Table</TabsTrigger>
           <TabsTrigger value="players">Players</TabsTrigger>
           <TabsTrigger value="matches">Fixtures</TabsTrigger>
+          <TabsTrigger value="live-scoring">Live Scoring</TabsTrigger>
           <TabsTrigger value="news">News</TabsTrigger>
           <TabsTrigger value="gallery">Gallery</TabsTrigger>
         </TabsList>
@@ -613,6 +615,10 @@ export default function Admin() {
 
         <TabsContent value="players" className="space-y-4">
           <AdminPlayerDashboard />
+        </TabsContent>
+
+        <TabsContent value="live-scoring" className="space-y-4">
+          <LiveScoringAdmin />
         </TabsContent>
 
         <TabsContent value="matches" className="space-y-4">

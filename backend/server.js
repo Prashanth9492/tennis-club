@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
 
 
 
@@ -21,6 +23,27 @@ import authRouter from './routes/auth.js';
 dotenv.config();
 
 const app = express(); // ✅ initialize app first
+const server = createServer(app);
+export const io = new Server(server, {
+  cors: {
+    origin: true,
+    credentials: true
+  }
+});
+
+// Socket.IO connection handling
+io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
+  
+  socket.on('joinMatch', (matchId) => {
+    socket.join(`match_${matchId}`);
+    console.log(`Client ${socket.id} joined match ${matchId}`);
+  });
+  
+  socket.on('disconnect', () => {
+    console.log('Client disconnected:', socket.id);
+  });
+});
 
 app.use(cors({
   origin: true,
@@ -59,8 +82,9 @@ const PORT = process.env.PORT || 5000;
 
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`✅ Server running on port ${PORT}`);
+      console.log(`🔄 Socket.IO enabled for real-time updates`);
     });
   })
   .catch((err) => {
