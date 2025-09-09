@@ -35,12 +35,12 @@ const InningsSchema = new mongoose.Schema({
   inningsNumber: { type: Number, required: true }, // 1 or 2
   battingTeam: { 
     type: String, 
-    enum: ['AGNI', 'AAKASH', 'VAYU', 'JAL', 'PRUDHVI'],
+    enum: ['AGNI-A', 'AGNI-B', 'AAKASH-A', 'AAKASH-B', 'VAYU-A', 'VAYU-B', 'JAL-A', 'JAL-B', 'PRUDHVI-A', 'PRUDHVI-B'],
     required: true 
   },
   bowlingTeam: { 
     type: String, 
-    enum: ['AGNI', 'AAKASH', 'VAYU', 'JAL', 'PRUDHVI'],
+    enum: ['AGNI-A', 'AGNI-B', 'AAKASH-A', 'AAKASH-B', 'VAYU-A', 'VAYU-B', 'JAL-A', 'JAL-B', 'PRUDHVI-A', 'PRUDHVI-B'],
     required: true 
   },
   runs: { type: Number, default: 0 },
@@ -92,12 +92,12 @@ const MatchSchema = new mongoose.Schema({
   title: { type: String, required: true },
   team1: { 
     type: String, 
-    enum: ['AGNI', 'AAKASH', 'VAYU', 'JAL', 'PRUDHVI'],
+    enum: ['AGNI-A', 'AGNI-B', 'AAKASH-A', 'AAKASH-B', 'VAYU-A', 'VAYU-B', 'JAL-A', 'JAL-B', 'PRUDHVI-A', 'PRUDHVI-B'],
     required: true 
   },
   team2: { 
     type: String, 
-    enum: ['AGNI', 'AAKASH', 'VAYU', 'JAL', 'PRUDHVI'],
+    enum: ['AGNI-A', 'AGNI-B', 'AAKASH-A', 'AAKASH-B', 'VAYU-A', 'VAYU-B', 'JAL-A', 'JAL-B', 'PRUDHVI-A', 'PRUDHVI-B'],
     required: true 
   },
   venue: { type: String, required: true },
@@ -110,7 +110,7 @@ const MatchSchema = new mongoose.Schema({
   totalOvers: { type: Number, default: 20 },
   tossWinner: { 
     type: String, 
-    enum: ['AGNI', 'AAKASH', 'VAYU', 'JAL', 'PRUDHVI']
+    enum: ['AGNI-A', 'AGNI-B', 'AAKASH-A', 'AAKASH-B', 'VAYU-A', 'VAYU-B', 'JAL-A', 'JAL-B', 'PRUDHVI-A', 'PRUDHVI-B']
   },
   tossDecision: { 
     type: String, 
@@ -128,7 +128,7 @@ const MatchSchema = new mongoose.Schema({
   result: {
     winner: { 
       type: String, 
-      enum: ['AGNI', 'AAKASH', 'VAYU', 'JAL', 'PRUDHVI', 'tie', 'no_result'] 
+      enum: ['AGNI-A', 'AGNI-B', 'AAKASH-A', 'AAKASH-B', 'VAYU-A', 'VAYU-B', 'JAL-A', 'JAL-B', 'PRUDHVI-A', 'PRUDHVI-B', 'tie', 'no_result'] 
     },
     winBy: { type: String }, // "10 runs", "6 wickets", etc.
     playerOfMatch: { type: String }

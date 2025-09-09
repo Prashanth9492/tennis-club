@@ -10,7 +10,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Teams from "./pages/Teams";
 import Players from "./pages/Players";
-import LiveScores from "./pages/LiveScores";
+// import LiveScores from "./pages/LiveScores";
 import Fixtures from "./pages/Fixtures";
 import Statistics from "./pages/Statistics";
 import PointsTable from "./pages/PointsTable";
@@ -36,7 +36,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/teams" element={<Teams />} />
               <Route path="/players" element={<Players />} />
-              <Route path="/live-scores" element={<LiveScores />} />
+              {/* <Route path="/live-scores" element={<LiveScores />} /> */}
               <Route path="/fixtures" element={<Fixtures />} />
               <Route path="/stats" element={<Statistics />} />
               <Route path="/points-table" element={<PointsTable />} />

@@ -1,9 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
   import { Badge } from "@/components/ui/badge";
   import { Button } from "@/components/ui/button";
-  import { Trophy, Users, Star, TrendingUp, ArrowLeft, Calendar, Clock, MapPin } from "lucide-react";
+  import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+  import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+  import { Trophy, Users, Star, TrendingUp, ArrowLeft, Calendar, Clock, MapPin, X } from "lucide-react";
   import { motion } from "framer-motion";
   import { useState, useEffect } from "react";
+  import { useNavigate } from "react-router-dom";
+  import axios from "axios";
   import aakash from "@/assets/aakash.png";
   import srkr from "@/assets/srkrec-logo.png";
   import agni from "@/assets/agni.jpg";
@@ -11,6 +15,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import prudhvi from "@/assets/prudhvi.jpg";
 import vayu from "@/assets/vayu.jpg";
 import jal from "@/assets/jal.jpg";
+
+  // Player interface - matching the backend Player model
+  interface Player {
+    _id: string;
+    name: string;
+    position?: string;
+    team: string;
+    age?: string;
+    battingStyle?: string;
+    bowlingStyle?: string;
+    description?: string;
+    photoUrl?: string;
+    matches: number;
+    innings: number;
+    runs: number;
+    highest_score: number;
+    hundreds: number;
+    fifties: number;
+    fours: number;
+    sixes: number;
+    balls_faced: number;
+    outs: number;
+    average?: number;
+    strike_rate?: number;
+    pinno: string;
+  }
 
   // Mock data for the 5 teams (without past matches)
   const teams = [
@@ -75,11 +105,82 @@ import jal from "@/assets/jal.jpg";
   };
 
   export default function Teams() {
+    const navigate = useNavigate();
     const [selectedTeam, setSelectedTeam] = useState(null);
     const [matches, setMatches] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [lastUpdated, setLastUpdated] = useState(null);
+    
+    // Player-related state
+    const [players, setPlayers] = useState<Player[]>([]);
+    const [selectedHouseTeam, setSelectedHouseTeam] = useState<string | null>(null);
+    const [playersLoading, setPlayersLoading] = useState(false);
+    
+    // Helper functions for team colors and logos
+    const getTeamColor = (team) => {
+      const houseName = team?.split('-')[0];
+      const teamColors = {
+        'AGNI': '#ef4444',
+        'AAKASH': '#3b82f6', 
+        'VAYU': '#10b981',
+        'JAL': '#06b6d4',
+        'PRUDHVI': '#8b5cf6'
+      };
+      return teamColors[houseName] || '#6b7280';
+    };
+    
+    const getTeamLogo = (team) => {
+      const houseName = team?.split('-')[0];
+      const teamLogos = {
+        'AGNI': agni,
+        'AAKASH': aakash,
+        'VAYU': vayu,
+        'JAL': jal,
+        'PRUDHVI': prudhvi
+      };
+      return teamLogos[houseName] || null;
+    };
+    
+    // Function to fetch all players
+    const fetchPlayers = async () => {
+      try {
+        setPlayersLoading(true);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/players`);
+        setPlayers(response.data);
+        console.log(`Fetched ${response.data.length} players from API`);
+      } catch (err) {
+        console.error('Error fetching players:', err);
+        setPlayers([]);
+        setError('Failed to fetch players. Please try again.');
+      } finally {
+        setPlayersLoading(false);
+      }
+    };
+    
+    // Function to get players for a specific house team
+    const getHouseTeamPlayers = (houseName, teamType) => {
+      const teamName = `${houseName}-${teamType}`;
+      return players.filter(player => player.team === teamName);
+    };
+    
+    // Function to handle team button click
+    const handleTeamClick = async (houseName: string, teamType: string) => {
+      const teamName = `${houseName}-${teamType}`;
+      
+      // If clicking the same team, toggle off
+      if (selectedHouseTeam === teamName) {
+        setSelectedHouseTeam(null);
+        return;
+      }
+      
+      // If players not loaded yet, fetch them
+      if (players.length === 0) {
+        await fetchPlayers();
+      }
+      
+      setSelectedHouseTeam(teamName);
+    };
 
     // Function to fetch matches
     const fetchMatches = async () => {
@@ -102,6 +203,7 @@ import jal from "@/assets/jal.jpg";
 
     useEffect(() => {
       fetchMatches();
+      fetchPlayers(); // Fetch players on component mount
     }, []);
 
     // Refresh data when page becomes visible (when navigating from other pages)
@@ -309,8 +411,24 @@ import jal from "@/assets/jal.jpg";
                         <div className="font-medium text-black">{team.home_ground}</div>
                       </div>
                       <div className="flex gap-2 mt-4 flex-wrap">
-                        <Button variant="outline" size="sm" className="bg-white text-black border-gray-300 hover:bg-gray-100 shadow-sm">TEAM-A</Button>
-                        <Button variant="outline" size="sm" className="bg-white text-black border-gray-300 hover:bg-gray-100 shadow-sm">TEAM-B</Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="bg-white text-black border-gray-300 hover:bg-gray-100 shadow-sm"
+                          onClick={() => handleTeamClick(team.name, 'A')}
+                          disabled={playersLoading}
+                        >
+                          {playersLoading ? 'Loading...' : 'TEAM-A'}
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="bg-white text-black border-gray-300 hover:bg-gray-100 shadow-sm"
+                          onClick={() => handleTeamClick(team.name, 'B')}
+                          disabled={playersLoading}
+                        >
+                          {playersLoading ? 'Loading...' : 'TEAM-B'}
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
@@ -322,6 +440,166 @@ import jal from "@/assets/jal.jpg";
                       </div>
                     </div>
                   </Card>
+
+                  {/* Players Display Card - shows when a team A/B is selected */}
+                  {selectedHouseTeam && selectedHouseTeam.startsWith(team.name) && (
+                    <Card className="shadow border border-gray-200 mt-4">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {getTeamLogo(selectedHouseTeam) && (
+                              <img 
+                                src={getTeamLogo(selectedHouseTeam)} 
+                                alt={`${selectedHouseTeam} logo`}
+                                className="w-8 h-8 rounded-full object-cover"
+                              />
+                            )}
+                            <span style={{ color: getTeamColor(selectedHouseTeam) }}>
+                              {selectedHouseTeam} Players
+                            </span>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedHouseTeam(null)}
+                            className="p-2"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </CardTitle>
+                        <p className="text-sm text-gray-600">
+                          {getHouseTeamPlayers(selectedHouseTeam.split('-')[0], selectedHouseTeam.split('-')[1]).length} players in this team
+                        </p>
+                      </CardHeader>
+                      <CardContent>
+                        {playersLoading ? (
+                          <div className="flex justify-center items-center py-6">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                          </div>
+                        ) : (
+                          <>
+                            {getHouseTeamPlayers(selectedHouseTeam.split('-')[0], selectedHouseTeam.split('-')[1]).length > 0 ? (
+                              <div className="overflow-x-auto">
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow className="bg-gray-50">
+                                      <TableHead className="text-center font-semibold">PIN</TableHead>
+                                      <TableHead className="font-semibold">Player</TableHead>
+                                      <TableHead className="text-center font-semibold">Team</TableHead>
+                                      <TableHead className="text-center font-semibold text-blue-600">Runs</TableHead>
+                                      <TableHead className="text-center font-semibold">Mat</TableHead>
+                                      <TableHead className="text-center font-semibold">Inns</TableHead>
+                                      <TableHead className="text-center font-semibold">HS</TableHead>
+                                      <TableHead className="text-center font-semibold">Avg</TableHead>
+                                      <TableHead className="text-center font-semibold">SR</TableHead>
+                                      <TableHead className="text-center font-semibold">100</TableHead>
+                                      <TableHead className="text-center font-semibold">50</TableHead>
+                                      <TableHead className="text-center font-semibold">4s</TableHead>
+                                      <TableHead className="text-center font-semibold">6s</TableHead>
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {getHouseTeamPlayers(selectedHouseTeam.split('-')[0], selectedHouseTeam.split('-')[1]).map((player, index) => (
+                                      <TableRow 
+                                        key={player._id} 
+                                        className="hover:bg-gray-50 cursor-pointer transition-colors"
+                                        onClick={() => {
+                                          // Navigate to Players page with player ID to highlight
+                                          navigate(`/players?highlight=${player._id}`);
+                                        }}
+                                      >
+                                        <TableCell className="text-center font-mono text-sm">
+                                          {player.pinno}
+                                        </TableCell>
+                                        <TableCell>
+                                          <div className="flex items-center gap-3">
+                                            <Avatar className="w-8 h-8">
+                                              <AvatarImage 
+                                                src={player.photoUrl ? (player.photoUrl.startsWith('http') ? player.photoUrl : `http://localhost:5001${player.photoUrl}`) : undefined} 
+                                                alt={player.name} 
+                                              />
+                                              <AvatarFallback 
+                                                className="text-white text-xs font-semibold"
+                                                style={{ backgroundColor: getTeamColor(selectedHouseTeam) }}
+                                              >
+                                                {player.name.split(' ').map(n => n[0]).join('')}
+                                              </AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                              <div className="font-medium text-sm">{player.name}</div>
+                                              {player.position && (
+                                                <div className="text-xs text-gray-500 capitalize">{player.position}</div>
+                                              )}
+                                            </div>
+                                          </div>
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          <div className="flex items-center justify-center gap-2">
+                                            {getTeamLogo(selectedHouseTeam) && (
+                                              <img 
+                                                src={getTeamLogo(selectedHouseTeam)} 
+                                                alt={`${selectedHouseTeam} logo`}
+                                                className="w-5 h-5 rounded-full object-cover"
+                                              />
+                                            )}
+                                            <Badge 
+                                              variant="outline"
+                                              className="text-xs"
+                                              style={{ 
+                                                color: getTeamColor(selectedHouseTeam),
+                                                borderColor: getTeamColor(selectedHouseTeam) + '40'
+                                              }}
+                                            >
+                                              {player.team}
+                                            </Badge>
+                                          </div>
+                                        </TableCell>
+                                        <TableCell className="text-center font-semibold text-blue-600">
+                                          {player.runs}
+                                        </TableCell>
+                                        <TableCell className="text-center">{player.matches}</TableCell>
+                                        <TableCell className="text-center">{player.innings}</TableCell>
+                                        <TableCell className="text-center font-semibold">{player.highest_score}</TableCell>
+                                        <TableCell className="text-center">
+                                          {player.average ? Number(player.average).toFixed(2) : '0.00'}
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          {player.strike_rate ? Number(player.strike_rate).toFixed(2) : '0.00'}
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          <Badge 
+                                            variant={player.hundreds > 0 ? "default" : "secondary"}
+                                            className={`text-xs ${player.hundreds > 0 ? 'bg-green-600' : ''}`}
+                                          >
+                                            {player.hundreds}
+                                          </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          <Badge 
+                                            variant={player.fifties > 0 ? "default" : "secondary"}
+                                            className={`text-xs ${player.fifties > 0 ? 'bg-yellow-600' : ''}`}
+                                          >
+                                            {player.fifties}
+                                          </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-center">{player.fours}</TableCell>
+                                        <TableCell className="text-center">{player.sixes}</TableCell>
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </div>
+                            ) : (
+                              <div className="text-center py-6">
+                                <div className="text-gray-500 mb-2">No players found for {selectedHouseTeam}</div>
+                                <p className="text-sm text-gray-400">Players will appear here once they are added to this team.</p>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </CardContent>
+                    </Card>
+                  )}
 
                   {/* Fixtures Card below team card, only if selectedTeam is this team */}
                   {selectedTeam && selectedTeam.id === team.id && (

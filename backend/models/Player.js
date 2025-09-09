@@ -4,7 +4,7 @@ const PlayerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   team: { 
     type: String, 
-    enum: ['AGNI', 'AAKASH', 'VAYU', 'JAL', 'PRUDHVI'],
+    enum: ['AGNI-A', 'AGNI-B', 'AAKASH-A', 'AAKASH-B', 'VAYU-A', 'VAYU-B', 'JAL-A', 'JAL-B', 'PRUDHVI-A', 'PRUDHVI-B'],
     required: true 
   },
   matches: { type: Number, default: 0 },

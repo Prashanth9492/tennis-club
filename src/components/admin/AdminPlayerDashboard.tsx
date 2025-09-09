@@ -107,7 +107,13 @@ export default function AdminPlayerDashboard() {
     pinno: ''
   });
 
-  const teams = ['AGNI', 'AAKASH', 'VAYU', 'JAL', 'PRUDHVI'];
+  const teams = [
+    'AGNI-A', 'AGNI-B',
+    'AAKASH-A', 'AAKASH-B', 
+    'VAYU-A', 'VAYU-B',
+    'JAL-A', 'JAL-B',
+    'PRUDHVI-A', 'PRUDHVI-B'
+  ];
   const positions = ['Batsman', 'Bowler', 'All-rounder', 'Wicket-keeper'];
   const battingStyles = ['Right-handed', 'Left-handed'];
   const bowlingStyles = [
@@ -121,7 +127,7 @@ export default function AdminPlayerDashboard() {
 
   const fetchPlayers = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:5001/api/players');
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/players`);
       setPlayers(response.data);
       calculateStats(response.data);
     } catch (error) {
@@ -177,6 +183,8 @@ export default function AdminPlayerDashboard() {
   }, [filterPlayers]);
 
   const getTeamLogo = (team: string) => {
+    // Extract house name from team (e.g., "AGNI-A" -> "AGNI")
+    const houseName = team.split('-')[0];
     const teamLogos = {
       'AGNI': agni,
       'AAKASH': aakash,
@@ -184,10 +192,12 @@ export default function AdminPlayerDashboard() {
       'JAL': jal,
       'PRUDHVI': prudhvi
     };
-    return teamLogos[team as keyof typeof teamLogos] || null;
+    return teamLogos[houseName as keyof typeof teamLogos] || null;
   };
 
   const getTeamColor = (team: string) => {
+    // Extract house name from team (e.g., "AGNI-A" -> "AGNI")
+    const houseName = team.split('-')[0];
     const teamColors = {
       'AGNI': '#FF4444',
       'AAKASH': '#4444FF',
@@ -195,7 +205,7 @@ export default function AdminPlayerDashboard() {
       'JAL': '#44FFFF',
       'PRUDHVI': '#FF44FF'
     };
-    return teamColors[team as keyof typeof teamColors] || '#666';
+    return teamColors[houseName as keyof typeof teamColors] || '#666';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -249,7 +259,7 @@ export default function AdminPlayerDashboard() {
       }
 
       if (selectedPlayer) {
-        await axios.put(`http://localhost:5001/api/players/${selectedPlayer._id}`, formData, {
+        await axios.put(`${import.meta.env.VITE_API_BASE_URL}/players/${selectedPlayer._id}`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -259,7 +269,7 @@ export default function AdminPlayerDashboard() {
           description: "Player updated successfully",
         });
       } else {
-        await axios.post('http://localhost:5001/api/players', formData, {
+        await axios.post(`${import.meta.env.VITE_API_BASE_URL}/players`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -327,7 +337,7 @@ export default function AdminPlayerDashboard() {
     if (!confirm('Are you sure you want to delete this player?')) return;
 
     try {
-      await axios.delete(`http://localhost:5001/api/players/${playerId}`);
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/players/${playerId}`);
       toast({
         title: "Success",
         description: "Player deleted successfully",
@@ -562,7 +572,10 @@ export default function AdminPlayerDashboard() {
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <Avatar className="h-10 w-10">
-                          <AvatarImage src={player.photoUrl} alt={player.name} />
+                          <AvatarImage 
+                            src={player.photoUrl ? (player.photoUrl.startsWith('http') ? player.photoUrl : `http://localhost:5001${player.photoUrl}`) : undefined} 
+                            alt={player.name} 
+                          />
                           <AvatarFallback style={{ backgroundColor: getTeamColor(player.team) + '20' }}>
                             {player.name.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
