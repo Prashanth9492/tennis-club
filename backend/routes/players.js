@@ -13,7 +13,19 @@ const upload = multer({ storage });
 // GET all players
 router.get('/', async (req, res) => {
   try {
-    const players = await Player.find().sort({ createdAt: -1 });
+    const { category } = req.query;
+    const filter = category ? { category } : {};
+    const players = await Player.find(filter).sort({ createdAt: -1 });
+    res.json(players);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET players by category
+router.get('/category/:category', async (req, res) => {
+  try {
+    const players = await Player.find({ category: req.params.category }).sort({ wins: -1 });
     res.json(players);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -39,8 +51,13 @@ router.post('/', upload.single('photo'), async (req, res) => {
     console.log('Received player data:', req.body); // Debug log
     const playerData = { ...req.body };
     
-    // Parse numeric fields - using correct field names from schema
-    const numericFields = ['matches', 'innings', 'runs', 'highest_score', 'hundreds', 'fifties', 'fours', 'sixes', 'balls_faced', 'outs'];
+    // Parse numeric fields for tennis stats
+    const numericFields = [
+      'matches_played', 'matches_won', 'matches_lost', 'sets_won', 'sets_lost',
+      'games_won', 'games_lost', 'titles_won', 'finals_reached', 'semifinals_reached',
+      'quarterfinals_reached', 'aces', 'double_faults', 'winners', 'unforced_errors',
+      'break_points_won', 'break_points_saved'
+    ];
     numericFields.forEach(field => {
       if (playerData[field] !== undefined && playerData[field] !== '') {
         playerData[field] = parseInt(playerData[field]);

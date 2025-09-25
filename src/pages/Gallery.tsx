@@ -14,7 +14,7 @@ const Gallery: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("http://localhost:5001/api/galleries")
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/galleries`)
       .then(res => {
         if (!res.ok) throw new Error('Failed to fetch');
         return res.json();
@@ -87,7 +87,7 @@ const Gallery: React.FC = () => {
             <div key={item._id + item.imageUrl} className="relative group overflow-hidden rounded-lg shadow hover:shadow-lg transition bg-white dark:bg-gray-800">
               {item.imageUrl ? (
                 <img
-                  src={item.imageUrl.startsWith('http') ? item.imageUrl : `http://localhost:5001${item.imageUrl}`}
+                  src={item.imageUrl.startsWith('http') ? item.imageUrl : `http://localhost:5000${item.imageUrl}`}
                   alt={item.title || 'Gallery Image'}
                   className="w-full h-60 object-cover transition-transform duration-300 group-hover:scale-105"
                 />

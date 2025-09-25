@@ -1,30 +1,3 @@
-  // Helper to fetch a sample image and upload as File
-  const handleTestImage = async () => {
-    setLoading(true);
-    setMessage(null);
-    try {
-      // Fetch a sample image as blob
-      const response = await fetch('https://images.unsplash.com/photo-1506744038136-46273834b3fb');
-      const blob = await response.blob();
-      // Create a File object
-      const file = new File([blob], 'testimg.jpg', { type: blob.type });
-      const formData = new FormData();
-      formData.append('title', 'Test Image');
-      formData.append('description', 'This is a test image uploaded automatically.');
-      formData.append('category', 'test');
-      formData.append('images', file);
-      const res = await fetch('http://localhost:5001/api/gallery', {
-        method: 'POST',
-        body: formData,
-      });
-      if (!res.ok) throw new Error('Upload failed');
-      setMessage('Test image uploaded successfully!');
-    } catch (err) {
-      setMessage('Test image upload failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 import React, { useState } from 'react';
 
 const GalleryForm: React.FC = () => {
@@ -49,7 +22,7 @@ const GalleryForm: React.FC = () => {
     formData.append('category', category);
     Array.from(images).forEach((img) => formData.append('images', img));
     try {
-      const res = await fetch('http://localhost:5001/api/gallery', {
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/gallery`, {
         method: 'POST',
         body: formData,
       });
@@ -61,6 +34,34 @@ const GalleryForm: React.FC = () => {
       setImages(null);
     } catch (err) {
       setMessage('Upload failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper to fetch a sample image and upload as File
+  const handleTestImage = async () => {
+    setLoading(true);
+    setMessage(null);
+    try {
+      // Fetch a sample image as blob
+      const response = await fetch('https://images.unsplash.com/photo-1506744038136-46273834b3fb');
+      const blob = await response.blob();
+      // Create a File object
+      const file = new File([blob], 'testimg.jpg', { type: blob.type });
+      const formData = new FormData();
+      formData.append('title', 'Test Image');
+      formData.append('description', 'This is a test image uploaded automatically.');
+      formData.append('category', 'test');
+      formData.append('images', file);
+      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/gallery`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!res.ok) throw new Error('Upload failed');
+      setMessage('Test image uploaded successfully!');
+    } catch (err) {
+      setMessage('Test image upload failed. Please try again.');
     } finally {
       setLoading(false);
     }

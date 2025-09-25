@@ -15,11 +15,36 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
+// Validate required Firebase config
+if (!firebaseConfig.projectId) {
+  console.error('Firebase PROJECT_ID is missing. Check your .env file.');
+}
+
+if (!firebaseConfig.databaseURL) {
+  console.error('Firebase DATABASE_URL is missing. Check your .env file.');
+}
+
 
 // Initialize Firebase only if no apps are already initialized
+let app;
+let db;
+let storage;
+let rtdb;
 
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+try {
+  app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  storage = getStorage(app);
+  rtdb = getDatabase(app);
+  console.log('✅ Firebase initialized successfully');
+} catch (error) {
+  console.error('❌ Firebase initialization error:', error);
+  // Create fallback app for development
+  app = null;
+  db = null;
+  storage = null;
+  rtdb = null;
+}
+
 export default app;
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-export const rtdb = getDatabase(app);
+export { db, storage, rtdb };

@@ -24,7 +24,7 @@ export default function News() {
   const [visibleArticles, setVisibleArticles] = useState(6);
 
   useEffect(() => {
-    axios.get("http://localhost:5001/api/news")
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/news`)
       .then(res => setNews(res.data))
       .catch(err => {
         console.error("Error fetching news:", err);

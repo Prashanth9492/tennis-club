@@ -3,13 +3,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import crick from "../assets/logos/Cricket Reward.mp4";
 
-import JalImage from '../assets/logos/1.jpg';
-import AakashImage from '../assets/logos/5.jpg';
-import AgniImage from '../assets/logos/3.jpg';
-import VayuImage from '../assets/logos/2.jpg';
-import PrudhviImage from '../assets/logos/4.jpg';
-import SrkrLogo from '../assets/logos/srkrlogo.png';
-import Teams from '@/pages/Teams';
+import JalImage from '../assets/jal.jpg';
+import AakashImage from '../assets/aakash.png';
+import AgniImage from '../assets/agni.jpg';
+import VayuImage from '../assets/vayu.jpg';
+import PrudhviImage from '../assets/prudhvi.jpg';
+import SrkrLogo from '../assets/logo1.png';
 
 type ValidHouse = 'aakash' | 'agni' | 'vayu' | 'jal' | 'prudhvi';
 
@@ -151,13 +150,13 @@ export function HeroSection() {
             {/* Logo + Title */}
             <div className="inline-block animate-fade-in">
               <span className="flex items-center gap-2 text-foreground">
-                <img src={SrkrLogo} alt="SRKR Logo" className="h-8 w-auto" />
-                <span className="text-red-700 dark:text-red-400 font-bold text-md md:text-lg">
-                  SRKREC
+                <img src={SrkrLogo} alt="Bhimavaram Tennis Club Logo" className="h-12 w-auto" />
+                <span className="text-green-700 dark:text-green-400 font-bold text-md md:text-lg">
+                  Bhimavaram
                 </span>
                 <span className="text-gray-800 dark:text-gray-200 font-bold text-xs md:text-sm lg:text-md">
-                  <span className="hidden md:inline">CSD & CSIT Department</span>
-                  <span className="md:hidden">CSD & CSIT Dept</span>
+                  <span className="hidden md:inline">Tennis Club</span>
+                  <span className="md:hidden">Tennis Club</span>
                 </span>
               </span>
             </div>
@@ -168,8 +167,8 @@ export function HeroSection() {
                          text-gray-900 dark:text-gray-100 animate-slide-up"
               style={{ animationDelay: '100ms' }}
             >
-              College <span className="text-house-aakash">Cricket</span>{" "}
-              <span className="text-house-aakash">Championship</span>
+              Bhimavaram <span className="text-green-600 dark:text-green-400">Tennis</span>{" "}
+              <span className="text-green-600 dark:text-green-400">Club</span>
             </h1>
 
             {/* Buttons */}
@@ -188,44 +187,66 @@ export function HeroSection() {
               </Link>
 
               <Link
-                to="/teams"
+                to="/rankings"
                 className="inline-flex items-center justify-center rounded-md 
                            bg-secondary px-5 py-2 text-sm font-medium text-secondary-foreground 
                            shadow-sm transition-colors hover:bg-secondary/80"
               >
-                View Teams
+                Ranking
               </Link>
             </div>
 
-            {/* Houses Section - Grid on desktop, hidden on mobile */}
+            {/* Tennis Tournament Categories - Grid on desktop, hidden on mobile */}
             <div className="mt-8 hidden md:block">
               <h2 className="text-xl md:text-2xl font-bold text-center mb-4 text-gray-900 dark:text-gray-100">
-                Tournament Houses
+                Tournament Categories
               </h2>
               
               {/* Desktop View - Grid Layout */}
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                {houses.map((house, index) => (
-                    <div
-                    key={house.name}
-                    className={`group relative cursor-pointer overflow-hidden rounded-xl border-2 p-4 transition-all duration-300 hover:scale-105 hover:shadow-lg ${house.colorClass}`}
-                    onClick={() => navigate('/teams')}
-                    style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                    <div className="flex flex-col items-center">
-                      <div className="mb-3 h-20 w-20 overflow-hidden rounded-full border-2 border-white shadow-md">
-                      <img
-                        src={house.imageSrc}
-                        alt={house.displayName}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
-                      </div>
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                      {house.displayName}
-                      </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Men's Singles */}
+                <div className="group relative cursor-pointer overflow-hidden rounded-xl border-2 border-green-200 bg-green-50/50 p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-green-400 dark:border-green-800 dark:bg-green-900/20">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-800">
+                      <span className="text-2xl">🎾</span>
                     </div>
+                    <h3 className="text-lg font-bold text-green-800 dark:text-green-200">Men's Singles</h3>
+                    <p className="mt-2 text-sm text-green-600 dark:text-green-400">Individual Championship</p>
+                  </div>
+                </div>
+
+                {/* Women's Singles */}
+                <div className="group relative cursor-pointer overflow-hidden rounded-xl border-2 border-pink-200 bg-pink-50/50 p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-pink-400 dark:border-pink-800 dark:bg-pink-900/20">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-pink-100 dark:bg-pink-800">
+                      <span className="text-2xl">🏆</span>
                     </div>
-                ))}
+                    <h3 className="text-lg font-bold text-pink-800 dark:text-pink-200">Women's Singles</h3>
+                    <p className="mt-2 text-sm text-pink-600 dark:text-pink-400">Individual Championship</p>
+                  </div>
+                </div>
+
+                {/* Men's Doubles */}
+                <div className="group relative cursor-pointer overflow-hidden rounded-xl border-2 border-blue-200 bg-blue-50/50 p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-blue-400 dark:border-blue-800 dark:bg-blue-900/20">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-800">
+                      <span className="text-2xl">👥</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-blue-800 dark:text-blue-200">Men's Doubles</h3>
+                    <p className="mt-2 text-sm text-blue-600 dark:text-blue-400">Team Championship</p>
+                  </div>
+                </div>
+
+                {/* Mixed Doubles */}
+                <div className="group relative cursor-pointer overflow-hidden rounded-xl border-2 border-purple-200 bg-purple-50/50 p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-purple-400 dark:border-purple-800 dark:bg-purple-900/20">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-800">
+                      <span className="text-2xl">⚡</span>
+                    </div>
+                    <h3 className="text-lg font-bold text-purple-800 dark:text-purple-200">Mixed Doubles</h3>
+                    <p className="mt-2 text-sm text-purple-600 dark:text-purple-400">Mixed Team Event</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -273,64 +294,69 @@ export function HeroSection() {
         </style>
       </section>
 
-      {/* Mobile Houses Carousel - Only visible on mobile */}
+      {/* Mobile Tennis Categories Carousel - Only visible on mobile */}
       <div className="block md:hidden w-full px-4 pb-6">
         <h2 className="text-xl font-bold text-center mb-3 text-gray-900 dark:text-gray-100">
-          Tournament Houses
+          Tournament Categories
         </h2>
         
-        {/* Horizontal auto-scrolling carousel */}
-        <div 
-          ref={scrollContainerRef}
-          className="flex overflow-x-hidden scrollbar-hide"
-          style={{ scrollBehavior: 'smooth' }}
-        >
-          {houses.map((house, index) => (
-            <div
-              key={house.name}
-              className="flex-shrink-0 w-4/5 mx-2 first:ml-4 last:mr-4"
-            >
-              <div 
-                className={`cursor-pointer overflow-hidden rounded-xl border-2 p-4 transition-all duration-300 ${house.colorClass}`}
-                onClick={() => navigate('/teams')}
-
-              >
-                <div className="flex flex-col items-center">
-                  <div className="mb-3 h-20 w-20 overflow-hidden rounded-full border-2 border-white shadow-md">
-                    <img
-                      src={house.imageSrc}
-                      alt={house.displayName}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                    {house.displayName}
-                  </h3>
-                  <p className="mt-1 text-center text-sm text-gray-600 dark:text-gray-400">
-                    House of {house.displayName}
-                  </p>
+        {/* Horizontal scrollable carousel */}
+        <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide">
+          {/* Men's Singles */}
+          <div className="flex-shrink-0 w-64">
+            <div className="cursor-pointer overflow-hidden rounded-xl border-2 border-green-200 bg-green-50/50 p-4 transition-all duration-300 dark:border-green-800 dark:bg-green-900/20">
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-800">
+                  <span className="text-xl">🎾</span>
                 </div>
+                <h3 className="text-lg font-bold text-green-800 dark:text-green-200">Men's Singles</h3>
+                <p className="mt-1 text-sm text-green-600 dark:text-green-400">Individual Championship</p>
               </div>
             </div>
-          ))}
-        </div>
-        
-        {/* Dots Indicator */}
-        <div className="flex justify-center mt-4 space-x-2">
-          {houses.map((_, index) => (
-            <div
-              key={index}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentHouseIndex 
-                  ? 'bg-house-aakash scale-125' 
-                  : 'bg-gray-300 dark:bg-gray-600'
-              }`}
-            />
-          ))}
+          </div>
+
+          {/* Women's Singles */}
+          <div className="flex-shrink-0 w-64">
+            <div className="cursor-pointer overflow-hidden rounded-xl border-2 border-pink-200 bg-pink-50/50 p-4 transition-all duration-300 dark:border-pink-800 dark:bg-pink-900/20">
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-pink-100 dark:bg-pink-800">
+                  <span className="text-xl">🏆</span>
+                </div>
+                <h3 className="text-lg font-bold text-pink-800 dark:text-pink-200">Women's Singles</h3>
+                <p className="mt-1 text-sm text-pink-600 dark:text-pink-400">Individual Championship</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Men's Doubles */}
+          <div className="flex-shrink-0 w-64">
+            <div className="cursor-pointer overflow-hidden rounded-xl border-2 border-blue-200 bg-blue-50/50 p-4 transition-all duration-300 dark:border-blue-800 dark:bg-blue-900/20">
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-800">
+                  <span className="text-xl">👥</span>
+                </div>
+                <h3 className="text-lg font-bold text-blue-800 dark:text-blue-200">Men's Doubles</h3>
+                <p className="mt-1 text-sm text-blue-600 dark:text-blue-400">Team Championship</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Mixed Doubles */}
+          <div className="flex-shrink-0 w-64">
+            <div className="cursor-pointer overflow-hidden rounded-xl border-2 border-purple-200 bg-purple-50/50 p-4 transition-all duration-300 dark:border-purple-800 dark:bg-purple-900/20">
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-800">
+                  <span className="text-xl">⚡</span>
+                </div>
+                <h3 className="text-lg font-bold text-purple-800 dark:text-purple-200">Mixed Doubles</h3>
+                <p className="mt-1 text-sm text-purple-600 dark:text-purple-400">Mixed Team Event</p>
+              </div>
+            </div>
+          </div>
         </div>
         
         <div className="text-center mt-3 text-xs text-gray-600 dark:text-gray-400">
-          <p>Tap on a house to explore its players and team</p>
+          <p>Swipe to explore different tournament categories</p>
         </div>
       </div>
     </div>

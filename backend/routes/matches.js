@@ -40,18 +40,58 @@ router.get('/:matchId', async (req, res) => {
 // Create new match
 router.post('/', async (req, res) => {
   try {
-    const { team1, team2, ...rest } = req.body;
-    const match = new Match({
-      ...rest,
-      team1,
-      team2,
-      title: `${team1} vs ${team2}`, // Auto-generate title
-      matchId: `M${Date.now()}` // Generate unique match ID
-    });
+    const requestData = req.body;
+    
+    // Handle both cricket and tennis match formats
+    let matchData;
+    
+    if (requestData.player1 && requestData.player2) {
+      // Tennis match format
+      matchData = {
+        matchId: `M${Date.now()}`,
+        title: requestData.title || `${requestData.player1} vs ${requestData.player2}`,
+        player1: requestData.player1,
+        player2: requestData.player2,
+        player1Partner: requestData.player1Partner,
+        player2Partner: requestData.player2Partner,
+        court: requestData.court || 'Court 1',
+        venue: requestData.venue || 'Tennis Court',
+        matchDate: requestData.matchDate ? new Date(requestData.matchDate) : new Date(),
+        matchType: requestData.category?.includes('Doubles') ? 'Doubles' : 'Singles',
+        status: requestData.status || 'scheduled',
+        format: {
+          bestOf: 3,
+          tiebreakAt: 6,
+          finalSetTiebreak: true
+        },
+        sets: [],
+        playerStats: [],
+        isLive: requestData.status === 'live' || requestData.status === 'Live'
+      };
+    } else {
+      // Cricket match format (backwards compatibility)
+      const { team1, team2, ...rest } = requestData;
+      matchData = {
+        ...rest,
+        team1,
+        team2,
+        title: requestData.title || `${team1} vs ${team2}`,
+        matchId: `M${Date.now()}`
+      };
+    }
+    
+    const match = new Match(matchData);
     await match.save();
     res.status(201).json(match);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Match creation error:', error);
+    res.status(400).json({ 
+      message: error.message,
+      details: error.errors ? Object.keys(error.errors).map(key => ({
+        field: key,
+        message: error.errors[key].message
+      })) : []
+    });
   }
 });
 

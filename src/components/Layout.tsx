@@ -1,18 +1,20 @@
 import { LogOut, Sun, Moon } from "lucide-react";
 import { useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import srkrLogo from "@/assets/srkrec-logo.png";
+import bhimavaramLogo from "@/assets/logo1.png";
 import { useEffect, useState } from 'react';
+import { usePageLoading } from "@/hooks/usePageLoading";
 
 const NAV_LINKS = [
   { name: "Home", path: "/" },
-  { name: "Teams", path: "/teams" },
- { name: "Live Scores", path: "/live-scores" },
+  // { name: "Tournaments", path: "/tournaments" },
+  { name: "Live Matches", path: "/live-scores" },
   { name: "Players", path: "/players" },
-  { name: "Fixtures", path: "/fixtures" },
-  { name: "Points-table", path: "/points-table" },
+  { name: "Match Schedule", path: "/fixtures" },
+  { name: "Rankings", path: "/rankings" },
+  { name: "Highlights", path: "/highlights" },
   { name: "Gallery", path: "/gallery" },
- // { name: "News", path: "/news" },
+  // { name: "News", path: "/news" },
   //{ name: "Statistics", path: "/stats" },
 ];
 
@@ -32,6 +34,9 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const [theme, setTheme] = useTheme();
+  
+  // Initialize page loading animation
+  usePageLoading();
 
   if (location.pathname === "/auth" || location.pathname.startsWith("/admin")) {
     return <main className="min-h-screen bg-background">{children}</main>;
@@ -45,7 +50,7 @@ export function Layout({ children }: LayoutProps) {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <img src={srkrLogo} alt="SRKR Engineering College" className="h-10 w-auto" />
+            <img src={bhimavaramLogo} alt="Bhimavaram Open Tennis Tournament" className="h-20 w-auto" />
           </div>
           {/* Theme toggle button - positioned at the right corner */}
           <div className="flex items-center">

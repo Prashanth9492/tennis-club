@@ -40,6 +40,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import AdminPlayerDashboard from "@/components/admin/AdminPlayerDashboard";
 import LiveScoringAdmin from "@/components/admin/LiveScoringAdmin";
+import HighlightsDashboard from "./HighlightsDashboard";
 
 interface DashboardStats {
   totalTeams: number;
@@ -521,11 +522,12 @@ export default function Admin() {
 
       <Tabs defaultValue="points-table" className="space-y-6">
 
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="points-table">Points Table</TabsTrigger>
           <TabsTrigger value="players">Players</TabsTrigger>
           <TabsTrigger value="matches">Fixtures</TabsTrigger>
           <TabsTrigger value="live-scoring">Live Scoring</TabsTrigger>
+          <TabsTrigger value="highlights">Highlights</TabsTrigger>
           <TabsTrigger value="news">News</TabsTrigger>
           <TabsTrigger value="gallery">Gallery</TabsTrigger>
         </TabsList>
@@ -619,6 +621,10 @@ export default function Admin() {
 
         <TabsContent value="live-scoring" className="space-y-4">
           <LiveScoringAdmin />
+        </TabsContent>
+
+        <TabsContent value="highlights" className="space-y-4">
+          <HighlightsDashboard />
         </TabsContent>
 
         <TabsContent value="matches" className="space-y-4">

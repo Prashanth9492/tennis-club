@@ -73,7 +73,7 @@ export default function PlayerManagement() {
 
   const fetchPlayers = async () => {
     try {
-      const response = await axios.get('http://localhost:5001/api/players');
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/players`);
       setPlayers(response.data);
     } catch (error) {
       console.error('Error fetching players:', error);
@@ -92,14 +92,14 @@ export default function PlayerManagement() {
     try {
       if (selectedPlayer) {
         // Update existing player
-        await axios.put(`http://localhost:5001/api/players/${selectedPlayer._id}`, playerForm);
+        await axios.put(`${import.meta.env.VITE_API_BASE_URL}/players/${selectedPlayer._id}`, playerForm);
         toast({
           title: "Success",
           description: "Player updated successfully",
         });
       } else {
         // Create new player
-        await axios.post('http://localhost:5001/api/players', playerForm);
+        await axios.post(`${import.meta.env.VITE_API_BASE_URL}/players`, playerForm);
         toast({
           title: "Success",
           description: "Player created successfully",
@@ -131,7 +131,7 @@ export default function PlayerManagement() {
     if (!confirm('Are you sure you want to delete this player?')) return;
 
     try {
-      await axios.delete(`http://localhost:5001/api/players/${playerId}`);
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/players/${playerId}`);
       toast({
         title: "Success",
         description: "Player deleted successfully",

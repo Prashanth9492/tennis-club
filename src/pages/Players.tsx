@@ -14,35 +14,36 @@ import vayu from "@/assets/vayu.jpg";
 import jal from "@/assets/jal.jpg";
 import aakash from "@/assets/aakash.png";
 
-interface Player {
+interface TennisPlayer {
   _id: string;
   name: string;
   team: string;
-  matches: number;
-  innings: number;
-  runs: number;
-  highest_score: number;
-  hundreds: number;
-  fifties: number;
-  fours: number;
-  sixes: number;
-  balls_faced: number;
-  outs: number;
-  average: number;
-  strike_rate: number;
+  matches_played: number;
+  matches_won: number;
+  matches_lost: number;
+  sets_won: number;
+  sets_lost: number;
+  games_won: number;
+  games_lost: number;
+  win_percentage: number;
+  current_ranking: number;
+  best_ranking?: number;
   pinno: string;
   photoUrl?: string;
+  category?: string;
+  playingStyle?: string;
+  dominantHand?: string;
 }
 
-const Players = () => {
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [filteredPlayers, setFilteredPlayers] = useState<Player[]>([]);
+const TennisPlayers = () => {
+  const [players, setPlayers] = useState<TennisPlayer[]>([]);
+  const [filteredPlayers, setFilteredPlayers] = useState<TennisPlayer[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [teamFilter, setTeamFilter] = useState('ALL');
   const [pinFilter, setPinFilter] = useState('');
   
   useEffect(() => {
-    axios.get("http://localhost:5001/api/players")
+    axios.get(`${import.meta.env.VITE_API_BASE_URL}/players`)
       .then(res => {
         setPlayers(res.data);
         setFilteredPlayers(res.data);
@@ -287,13 +288,12 @@ const Players = () => {
                         <TableHead className="w-[60px]">#</TableHead>
                         <TableHead>Player</TableHead>
                         <TableHead>Team</TableHead>
-                        <TableHead className="text-right">Runs</TableHead>
-                        <TableHead className="text-right">Avg</TableHead>
-                        <TableHead className="text-right">SR</TableHead>
-                        <TableHead className="text-right">HS</TableHead>
-                        <TableHead className="text-right">100s</TableHead>
-                        <TableHead className="text-right">50s</TableHead>
-                        <TableHead className="text-right">Matches</TableHead>
+                        <TableHead className="text-right">Matches Won</TableHead>
+                        <TableHead className="text-right">Win %</TableHead>
+                        <TableHead className="text-right">Sets Won</TableHead>
+                        <TableHead className="text-right">Games Won</TableHead>
+                        <TableHead className="text-right">Current Ranking</TableHead>
+                        <TableHead className="text-right">Total Matches</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -304,7 +304,7 @@ const Players = () => {
                             <div className="flex items-center gap-3">
                               <Avatar className="h-10 w-10">
                                 <AvatarImage 
-                                  src={player.photoUrl ? (player.photoUrl.startsWith('http') ? player.photoUrl : `http://localhost:5001${player.photoUrl}`) : undefined} 
+                                  src={player.photoUrl ? (player.photoUrl.startsWith('http') ? player.photoUrl : `http://localhost:5000${player.photoUrl}`) : undefined} 
                                   alt={player.name} 
                                 />
                                 <AvatarFallback style={{ backgroundColor: getTeamColor(player.team) + '20' }}>
@@ -334,21 +334,16 @@ const Players = () => {
                               </Badge>
                             </div>
                           </TableCell>
-                          <TableCell className="text-right font-semibold text-blue-600">{player.runs}</TableCell>
-                          <TableCell className="text-right">{player.average}</TableCell>
-                          <TableCell className="text-right">{player.strike_rate}</TableCell>
-                          <TableCell className="text-right">{player.highest_score}</TableCell>
+                          <TableCell className="text-right font-semibold text-green-600">{player.matches_won || 0}</TableCell>
+                          <TableCell className="text-right">{player.win_percentage ? `${player.win_percentage.toFixed(1)}%` : '0.0%'}</TableCell>
+                          <TableCell className="text-right">{player.sets_won || 0}</TableCell>
+                          <TableCell className="text-right">{player.games_won || 0}</TableCell>
                           <TableCell className="text-right">
-                            <Badge variant={player.hundreds > 0 ? "default" : "secondary"}>
-                              {player.hundreds}
+                            <Badge variant={player.current_ranking <= 10 ? "default" : "secondary"}>
+                              #{player.current_ranking || 'Unranked'}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-right">
-                            <Badge variant={player.fifties > 0 ? "default" : "secondary"}>
-                              {player.fifties}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">{player.matches}</TableCell>
+                          <TableCell className="text-right">{player.matches_played || 0}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -361,4 +356,4 @@ const Players = () => {
   );
 };
 
-export default Players;
+export default TennisPlayers;
