@@ -5,9 +5,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { User, Search, Filter } from "lucide-react";
+import { User, Search, Filter, ExternalLink } from "lucide-react";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import agni from "@/assets/agni.jpg";
 import prudhvi from "@/assets/prudhvi.jpg";
 import vayu from "@/assets/vayu.jpg";
@@ -36,6 +37,7 @@ interface TennisPlayer {
 }
 
 const TennisPlayers = () => {
+  const navigate = useNavigate();
   const [players, setPlayers] = useState<TennisPlayer[]>([]);
   const [filteredPlayers, setFilteredPlayers] = useState<TennisPlayer[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -158,8 +160,8 @@ const TennisPlayers = () => {
       {/* Header */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Players Statistics</h1>
-          <p className="text-muted-foreground">Performance statistics of our cricket champions</p>
+          <h1 className="text-3xl font-bold">Tennis Players</h1>
+          <p className="text-muted-foreground">Performance statistics of our tennis champions</p>
         </div>
         <Badge className="text-lg px-4 py-2 bg-blue-600 text-white">
           <User className="mr-2 h-5 w-5" />
@@ -294,6 +296,7 @@ const TennisPlayers = () => {
                         <TableHead className="text-right">Games Won</TableHead>
                         <TableHead className="text-right">Current Ranking</TableHead>
                         <TableHead className="text-right">Total Matches</TableHead>
+                        <TableHead className="text-center">Profile</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -312,7 +315,12 @@ const TennisPlayers = () => {
                                 </AvatarFallback>
                               </Avatar>
                               <div>
-                                <div className="font-medium">{player.name}</div>
+                                <button 
+                                  onClick={() => navigate(`/player/${player._id}`)}
+                                  className="font-medium text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                                >
+                                  {player.name}
+                                </button>
                                 <div className="text-sm text-muted-foreground">{player.pinno}</div>
                               </div>
                             </div>
@@ -344,6 +352,17 @@ const TennisPlayers = () => {
                             </Badge>
                           </TableCell>
                           <TableCell className="text-right">{player.matches_played || 0}</TableCell>
+                          <TableCell className="text-center">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => navigate(`/player/${player._id}`)}
+                              className="flex items-center gap-1"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              View Profile
+                            </Button>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>

@@ -24,6 +24,37 @@ router.get('/live', async (req, res) => {
   }
 });
 
+// Get matches by player name/ID
+router.get('/player/:playerId', async (req, res) => {
+  try {
+    const playerId = req.params.playerId;
+    
+    // First, get the player to find their name
+    const Player = (await import('../models/Player.js')).default;
+    const player = await Player.findById(playerId);
+    
+    if (!player) {
+      return res.status(404).json({ message: 'Player not found' });
+    }
+    
+    const playerName = player.name;
+    
+    // Find matches where the player is either player1 or player2
+    const matches = await Match.find({
+      $or: [
+        { player1: playerName },
+        { player2: playerName },
+        { 'player1Partner': playerName },
+        { 'player2Partner': playerName }
+      ]
+    }).sort({ matchDate: -1 });
+    
+    res.json(matches);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Get match by ID
 router.get('/:matchId', async (req, res) => {
   try {
