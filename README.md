@@ -1,8 +1,36 @@
-# Welcome to your Lovable project
+# College Tennis Championship
 
 ## Project info
 
 **URL**: https://lovable.dev/projects/a1f88dd3-f1c9-4bb6-98e7-1ec8bd62fb7c
+
+## About
+
+This is a comprehensive tennis tournament management system for college tennis championships. The application includes:
+
+- **Player Management**: Track player statistics, rankings, and performance across different tennis categories
+- **Tournament Management**: Organize tournaments for Men's/Women's Singles, Doubles, and Mixed Doubles
+- **Live Match Scoring**: Real-time match updates with point-by-point scoring
+- **Rankings System**: Dynamic player rankings based on tournament performance
+- **Match Statistics**: Detailed analytics including aces, winners, errors, and match history
+- **Gallery & News**: Tournament photos and news updates
+
+## Tennis Categories
+
+- Men's Singles
+- Women's Singles  
+- Men's Doubles
+- Women's Doubles
+- Mixed Doubles
+
+## Features
+
+- Real-time live scoring with Socket.IO
+- Responsive design for mobile and desktop
+- Player statistics and performance tracking
+- Tournament bracket management
+- Administrative dashboard for tournament management
+- Photo gallery for tournament highlights
 
 ## How can I edit this code?
 
