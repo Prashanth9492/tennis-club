@@ -96,7 +96,7 @@ server.listen(PORT, () => {
   console.log(`🔄 Socket.IO enabled for real-time updates`);
 });
 
-// Connect to MongoDB with improved settings for Atlas
+// Connect to MongoDB Atlas only
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI, { 
@@ -110,23 +110,16 @@ const connectDB = async () => {
     console.log('🗄️  Database: tennis_championship');
   } catch (err) {
     console.error('❌ MongoDB Atlas connection failed:', err.message);
-    console.log('🔧 Troubleshooting steps:');
-    console.log('   1. Check if your IP address is whitelisted in MongoDB Atlas');
-    console.log('   2. Verify your MongoDB credentials');
-    console.log('   3. Check your internet connection');
-    console.log('   4. Try adding 0.0.0.0/0 to IP whitelist temporarily');
-    
-    // Try local MongoDB as fallback
-    try {
-      await mongoose.connect('mongodb://localhost:27017/college_tennis');
-      console.log('✅ Connected to local MongoDB as fallback');
-      console.log('🗄️  Database: college_tennis (local)');
-    } catch (localErr) {
-      console.error('❌ Local MongoDB also failed:', localErr.message);
-      console.log('⚠️  Server running without database connection');
-      console.log('📝 Note: Some features may not work without database');
-      console.log('💡 Install MongoDB locally or fix Atlas IP whitelist');
-    }
+    console.log('');
+    console.log('🔧 REQUIRED: Add your IP address to MongoDB Atlas whitelist:');
+    console.log('   1. Go to MongoDB Atlas Dashboard');
+    console.log('   2. Navigate to "Network Access" in the left sidebar');
+    console.log('   3. Click "Add IP Address"');
+    console.log('   4. Add your current IP or use 0.0.0.0/0 for all IPs');
+    console.log('   5. Save and wait a few minutes');
+    console.log('');
+    console.log('⚠️  Server will continue without database connection');
+    console.log('📝 Note: Tennis application features require Atlas connection');
   }
 };
 
