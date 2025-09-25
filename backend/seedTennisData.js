@@ -223,7 +223,7 @@ const tennisRankings = [
 async function seedTennisData() {
   try {
     // Connect to MongoDB - using the tennis database
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/college_tennis');
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB - Tennis Database');
 
     // Clear existing data

@@ -12,7 +12,7 @@ const connectDB = async () => {
   } catch (atlasError) {
     console.log('⚠️  Atlas connection failed, trying local MongoDB...');
     try {
-      await mongoose.connect('mongodb://localhost:27017/tennis_club');
+      await mongoose.connect(process.env.MONGODB_URI);
       console.log('✅ Connected to local MongoDB for seeding');
     } catch (localError) {
       console.error('❌ Both Atlas and local MongoDB connections failed:', localError);
